@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import BigNumber from 'bignumber.js'
 import { keyBy, orderBy, take, reverse, sortBy, chunk } from 'lodash'
 import * as reducers from './cosmos-reducers'
@@ -47,7 +49,9 @@ export default class CosmosAPI {
   }
 
   async getAccountInfo(address) {
-    const accountInfo = await this.query(`/auth/accounts/${address}`)
+    const accountInfo = await this.query(
+      `cosmos/auth/v1beta1/accounts/${address}`
+    )
     return {
       accountNumber: accountInfo.value.account_number,
       sequence: accountInfo.value.sequence || '0',
@@ -55,24 +59,24 @@ export default class CosmosAPI {
   }
 
   async getSignedBlockWindow() {
-    const slashingParams = await this.query('/slashing/parameters')
-    return slashingParams.signed_blocks_window
+    const slashingParams = await this.query(`/cosmos/slashing/v1beta1/params`)
+    return slashingParams.params.signed_blocks_window
   }
 
   async getTransactions(address, pageNumber = 0) {
     // getting page count
     const [senderPage, recipientPage] = await Promise.all([
-      this.getPageCount(`/txs?message.sender=${address}`),
-      this.getPageCount(`/txs?transfer.recipient=${address}`),
+      this.getPageCount(`/cosmos/tx/v1beta1/txs?message.sender=${address}`),
+      this.getPageCount(`/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`),
     ])
 
     const requests = [
       this.loadPaginatedTxs(
-        `/txs?message.sender=${address}`,
+        `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
         senderPage - pageNumber
       ),
       this.loadPaginatedTxs(
-        `/txs?transfer.recipient=${address}`,
+        `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
         recipientPage - pageNumber
       ),
     ]
@@ -86,7 +90,7 @@ export default class CosmosAPI {
       if (senderPage - pageNumber > 1) {
         requests.push(
           this.loadPaginatedTxs(
-            `/txs?message.sender=${address}`,
+            `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
             senderPage - pageNumber - 1
           )
         )
@@ -94,7 +98,7 @@ export default class CosmosAPI {
       if (recipientPage - pageNumber > 1) {
         requests.push(
           this.loadPaginatedTxs(
-            `/txs?transfer.recipient=${address}`,
+            `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
             recipientPage - pageNumber - 1
           )
         )
@@ -109,12 +113,16 @@ export default class CosmosAPI {
   }
 
   async getValidatorSigningInfos() {
-    const signingInfos = await this.query(`slashing/signing_infos`)
+    const signingInfos = await this.query(
+      `cosmos/slashing/v1beta1/signing_infos`
+    )
     return signingInfos
   }
 
   async getValidatorSet(height = 'latest') {
-    const response = await this.query(`validatorsets/${height}`)
+    const response = await this.query(
+      `cosmos/base/tendermint/v1beta1/validatorsets/${height}`
+    )
     return response
   }
 
@@ -128,7 +136,7 @@ export default class CosmosAPI {
     let selfDelegation
     try {
       selfDelegation = await this.query(
-        `staking/delegators/${delegatorAddressFromOperator}/delegations/${validator.operatorAddress}`
+        `cosmos/staking/v1beta1/validators/${validator.operatorAddress}/delegations/${delegatorAddressFromOperator}`
       )
     } catch (error) {
       // in some rare cases the validator has no self delegation so this query fails
@@ -169,9 +177,9 @@ export default class CosmosAPI {
       signedBlocksWindow,
     ] = await Promise.all([
       Promise.all([
-        this.query(`staking/validators?status=unbonding`),
-        this.query(`staking/validators?status=bonded`),
-        this.query(`staking/validators?status=unbonded`),
+        this.query(`cosmos/staking/v1beta1/validators`),
+        // this.query(`cosmos/staking/v1beta1/validators?status=bonded`),
+        // this.query(`cosmos/staking/v1beta1/validators?status=unbonded`),
       ]).then((validatorGroups) => [].concat(...validatorGroups)),
       this.getAnnualProvision().catch(() => undefined),
       this.getValidatorSet(height),
@@ -222,11 +230,11 @@ export default class CosmosAPI {
       tallyingParameters,
       depositParameters,
     ] = await Promise.all([
-      this.query(`/gov/proposals/${proposal.id}/votes`),
-      this.query(`/gov/proposals/${proposal.id}/deposits`),
-      this.query(`/gov/proposals/${proposal.id}/tally`),
-      this.query(`/gov/parameters/tallying`),
-      this.query(`/gov/parameters/deposit`),
+      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.id}/votes`),
+      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.id}/deposits`),
+      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.id}/tally`),
+      this.query(`/cosmos/gov/v1beta1/params/tallying`),
+      this.query(`/cosmos/gov/v1beta1/params/deposit`),
     ])
     const totalVotingParticipation = BigNumber(tally.yes)
       .plus(tally.abstain)
@@ -307,14 +315,16 @@ export default class CosmosAPI {
       proposal.voting_end_time !== GOLANG_NULL_TIME &&
       new Date(firstBlock.time) > new Date(proposal.voting_end_time)
     if (!proposalIsFromPastChain) {
-      proposer = await this.query(`gov/proposals/${proposal.id}/proposer`)
+      proposer = await this.query(
+        `/cosmos/gov/v1beta1/proposals/${proposal.id}/proposer`
+      )
     }
     return proposer
   }
 
   async getProposalMetaData(proposal, firstBlock) {
     const [tally, detailedVotes, proposer] = await Promise.all([
-      this.query(`gov/proposals/${proposal.id}/tally`),
+      this.query(`cosmos/gov/v1beta1/proposals/${proposal.id}/tally`),
       this.getDetailedVotes(proposal),
       this.getProposer(proposal, firstBlock),
     ])
@@ -326,11 +336,11 @@ export default class CosmosAPI {
     const [
       proposalsResponse,
       firstBlock,
-      { bonded_tokens: totalBondedTokens },
+      pool,
     ] = await Promise.all([
-      this.query('gov/proposals'),
+      this.query('cosmos/gov/v1beta1/proposals'),
       this.getBlock(1),
-      this.query('/staking/pool'),
+      this.query('cosmos/staking/v1beta1/pool'),
     ])
     if (!Array.isArray(proposalsResponse)) return []
     const proposals = await Promise.all(
@@ -343,7 +353,7 @@ export default class CosmosAPI {
           proposal,
           tally,
           proposer,
-          totalBondedTokens,
+          pool.bonded_tokens,
           detailedVotes,
           this.validators
         )
@@ -357,15 +367,15 @@ export default class CosmosAPI {
     await this.dataReady
     const [
       proposal,
-      { bonded_tokens: totalBondedTokens },
+      pool,
       firstBlock,
     ] = await Promise.all([
-      this.query(`gov/proposals/${proposalId}`).catch(() => {
+      this.query(`cosmos/gov/v1beta1/proposals/${proposalId}`).catch(() => {
         throw new Error(
           `There is no proposal in the network with ID '${proposalId}'`
         )
       }),
-      this.query(`/staking/pool`),
+      this.query(`/cosmos/staking/v1beta1/pool`),
       this.getBlock(1),
     ])
     const [tally, detailedVotes, proposer] = await this.getProposalMetaData(
@@ -376,7 +386,7 @@ export default class CosmosAPI {
       proposal,
       tally,
       proposer,
-      totalBondedTokens,
+      pool.bonded_tokens,
       detailedVotes,
       this.validators
     )
@@ -398,11 +408,11 @@ export default class CosmosAPI {
   }
 
   async getGovernanceOverview() {
-    const { bonded_tokens: totalBondedTokens } = await this.query(
-      '/staking/pool'
+    const pool = await this.query(
+      'cosmos/staking/v1beta1/pool'
     )
     const [communityPoolArray, topVoters] = await Promise.all([
-      this.query('/distribution/community_pool'),
+      this.query('cosmos/distribution/v1beta1/community_pool'),
       this.getTopVoters(),
     ])
     const stakingChainDenom = this.network.getCoinLookup(
@@ -429,7 +439,9 @@ export default class CosmosAPI {
   }
 
   async getDelegatorVote({ proposalId, address }) {
-    const response = await this.query(`gov/proposals/${proposalId}/votes`)
+    const response = await this.query(
+      `cosmos/gov/v1beta1/proposals/${proposalId}/votes`
+    )
     const votes = response || []
     const vote = votes.find(({ voter }) => voter === address) || {}
     return {
@@ -449,7 +461,7 @@ export default class CosmosAPI {
 
   async getBalances(address) {
     const [balancesResponse, delegations, undelegations] = await Promise.all([
-      this.query(`bank/balances/${address}`),
+      this.query(`cosmos/bank/v1beta1/balances/${address}`),
       this.getDelegationsForDelegator(address),
       this.getUndelegationsForDelegator(address),
     ])
@@ -522,7 +534,9 @@ export default class CosmosAPI {
   async getDelegationsForDelegator(address) {
     await this.dataReady
     const delegations =
-      (await this.query(`staking/delegators/${address}/delegations`)) || []
+      (await this.query(
+        `cosmos/staking/v1beta1/delegators/${address}/delegations`
+      )) || []
     return delegations
       .map((delegation) =>
         this.reducers.delegationReducer(
@@ -538,7 +552,7 @@ export default class CosmosAPI {
     await this.dataReady
     const undelegations =
       (await this.query(
-        `staking/delegators/${address}/unbonding_delegations`
+        `cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`
       )) || []
 
     // undelegations come in a nested format { validator_address, delegator_address, entries }
@@ -582,14 +596,14 @@ export default class CosmosAPI {
   }
 
   async getAnnualProvision() {
-    const response = await this.query(`minting/annual-provisions`)
-    return response
+    const response = await this.query(`cosmos/mint/v1beta1/annual_provisions`)
+    return response || undefined
   }
 
   async getRewards(delegatorAddress) {
     await this.dataReady
     const result = await this.query(
-      `distribution/delegators/${delegatorAddress}/rewards`
+      `cosmos/distribution/v1beta1/delegators/${delegatorAddress}/rewards`
     )
     const rewards = (result.rewards || []).filter(
       ({ reward }) => reward && reward.length > 0
