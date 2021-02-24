@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import BigNumber from 'bignumber.js'
 import { reverse, sortBy, uniq, uniqWith } from 'lodash'
 import { encodeB32, decodeB32 } from '~/common/address'
@@ -8,12 +10,12 @@ import network from '~/common/network'
 function proposalBeginTime(proposal) {
   const status = getProposalStatus(proposal)
   switch (status) {
-    case 'DepositPeriod':
+    case 'PROPOSAL_STATUS_DEPOSIT_PERIOD':
       return proposal.submit_time
-    case 'VotingPeriod':
+    case 'PROPOSAL_STATUS_VOTING_PERIOD':
       return proposal.voting_start_time
-    case 'Passed':
-    case 'Rejected':
+    case 'PROPOSAL_STATUS_PASSED':
+    case 'PROPOSAL_STATUS_REJECTED':
       return proposal.voting_end_time
   }
 }
@@ -21,19 +23,21 @@ function proposalBeginTime(proposal) {
 function proposalEndTime(proposal) {
   const status = getProposalStatus(proposal)
   switch (status) {
-    case 'DepositPeriod':
+    case 'PROPOSAL_STATUS_DEPOSIT_PERIOD':
       return proposal.deposit_end_time
-    case 'VotingPeriod':
+    case 'PROPOSAL_STATUS_VOTING_PERIOD':
     // the end time lives in the past already if the proposal is finalized
     // eslint-disable-next-line no-fallthrough
-    case 'Passed':
-    case 'Rejected':
+    case 'PROPOSAL_STATUS_PASSED':
+    case 'PROPOSAL_STATUS_REJECTED':
       return proposal.voting_end_time
   }
 }
 
 function proposalFinalized(proposal) {
-  return ['Passed', 'Rejected'].includes(getProposalStatus(proposal))
+  return ['PROPOSAL_STATUS_PASSED', 'PROPOSAL_STATUS_REJECTED'].includes(
+    getProposalStatus(proposal)
+  )
 }
 
 export function getStakingCoinViewAmount(chainStakeAmount) {
@@ -500,11 +504,11 @@ export function claimRewardsMessagesAggregator(claimMessages) {
 
 function getProposalStatus(proposal) {
   return {
-    1: 'DepositPeriod',
-    2: 'VotingPeriod',
-    3: 'Passed',
-    4: 'Rejected',
-    5: 'Failed',
+    1: 'PROPOSAL_STATUS_DEPOSIT_PERIOD',
+    2: 'PROPOSAL_STATUS_VOTING_PERIOD',
+    3: 'PROPOSAL_STATUS_PASSED',
+    4: 'PROPOSAL_STATUS_REJECTED',
+    5: 'PROPOSAL_STATUS_FAILED',
   }[proposal.status]
 }
 
