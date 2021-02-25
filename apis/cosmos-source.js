@@ -248,9 +248,9 @@ export default class CosmosAPI {
       tallyingParameters,
       depositParameters,
     ] = await Promise.all([
-      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.id}/votes`),
-      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.id}/deposits`),
-      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.id}/tally`),
+      this.queryAutoPaginate(`/cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/votes`),
+      this.queryAutoPaginate(`/cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/deposits`),
+      this.query(`/cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/tally`),
       this.query(`/cosmos/gov/v1beta1/params/tallying`),
       this.query(`/cosmos/gov/v1beta1/params/deposit`),
     ])
@@ -329,12 +329,10 @@ export default class CosmosAPI {
   // we can't query the proposer of blocks from past chains
   async getProposer(proposal, firstBlock) {
     let proposer = { proposer: undefined }
-    const proposalIsFromPastChain =
-      proposal.voting_end_time !== GOLANG_NULL_TIME &&
-      new Date(firstBlock.time) > new Date(proposal.voting_end_time)
-    if (!proposalIsFromPastChain) {
+    const proposalExistsOnCurrentChain = firstBlock.chainId == 'cosmoshub-4'
+    if (!proposalExistsOnCurrentChain) {
       proposer = await this.query(
-        `/cosmos/gov/v1beta1/proposals/${proposal.id}/proposer`
+        `/cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/proposer`
       )
     }
     return proposer
@@ -342,7 +340,7 @@ export default class CosmosAPI {
 
   async getProposalMetaData(proposal, firstBlock) {
     const [tally, detailedVotes, proposer] = await Promise.all([
-      this.query(`cosmos/gov/v1beta1/proposals/${proposal.id}/tally`),
+      this.query(`cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/tally`),
       this.getDetailedVotes(proposal),
       this.getProposer(proposal, firstBlock),
     ])
@@ -353,10 +351,10 @@ export default class CosmosAPI {
     await this.dataReady
     const [
       proposalsResponse,
-      firstBlock,
+      firstBlock, // first block time is wrong in cosmoshub-4
       pool,
     ] = await Promise.all([
-      this.query('cosmos/gov/v1beta1/proposals'),
+      this.queryAutoPaginate('cosmos/gov/v1beta1/proposals'),
       this.getBlock(5200791),
       this.query('cosmos/staking/v1beta1/pool'),
     ])
