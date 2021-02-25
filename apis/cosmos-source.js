@@ -55,7 +55,7 @@ export default class CosmosAPI {
   async queryAutoPaginate(url) {
     var data = await this.query(url)
     const keys = Object.keys(data)
-    const fieldIndex = keys.indexOf("pagination")? 0 : 1
+    const fieldIndex = keys.indexOf("pagination") ? 0 : 1
     const fieldName = keys[fieldIndex]
     console.log(`Using field ${fieldName}`)
 
@@ -78,7 +78,7 @@ export default class CosmosAPI {
   }
 
   async getAccountTxs(account) { // to be replaced
-    return await axios.get(`https://api.cosmostation.io/v1/account/txs/${account}`)    
+    return await axios.get(`https://api.cosmostation.io/v1/account/txs/${account}`)
   }
 
   async getSignedBlockWindow() {
@@ -137,7 +137,7 @@ export default class CosmosAPI {
   }
 
   async getValidatorSigningInfos() {
-    const signingInfos = await this.query(
+    const signingInfos = await this.queryAutoPaginate(
       `cosmos/slashing/v1beta1/signing_infos`
     )
     return signingInfos.info
@@ -221,14 +221,11 @@ export default class CosmosAPI {
 
     console.log(validators)
     validators.forEach((validator) => {
-      const consensusAddress = pubkeyToAddress(
-        validator.consensus_pubkey.key,
-        network.validatorConsensusaddressPrefix
-      )
+      const consensusAddress = validator.address
       validator.votingPower = consensusValidators[consensusAddress]
         ? BigNumber(consensusValidators[consensusAddress].voting_power)
-            .div(totalVotingPower)
-            .toNumber()
+          .div(totalVotingPower)
+          .toNumber()
         : 0
       validator.signing_info = signingInfos[consensusAddress]
     })
@@ -263,22 +260,22 @@ export default class CosmosAPI {
       .plus(tally.no_with_veto)
     const formattedDeposits = deposits
       ? deposits.map((deposit) =>
-          this.reducers.depositReducer(deposit, this.validators)
-        )
+        this.reducers.depositReducer(deposit, this.validators)
+      )
       : undefined
     const depositsSum = formattedDeposits
       ? formattedDeposits.reduce((depositAmountAggregator, deposit) => {
-          return (depositAmountAggregator += Number(deposit.amount[0].amount))
-        }, 0)
+        return (depositAmountAggregator += Number(deposit.amount[0].amount))
+      }, 0)
       : undefined
     return {
       deposits: formattedDeposits,
       depositsSum: deposits ? Number(depositsSum).toFixed(6) : undefined,
       percentageDepositsNeeded: deposits
         ? percentage(
-            depositsSum,
-            BigNumber(depositParameters.min_deposit[0].amount)
-          )
+          depositsSum,
+          BigNumber(depositParameters.min_deposit[0].amount)
+        )
         : undefined,
       votes: votes
         ? votes.map((vote) => this.reducers.voteReducer(vote, this.validators))
@@ -297,33 +294,33 @@ export default class CosmosAPI {
           : undefined,
         proposal.deposit_end_time
           ? {
-              title: `Deposit Period Ends`,
-              // the deposit period can end before the time as the limit is reached already
-              time:
-                proposal.voting_start_time !== GOLANG_NULL_TIME &&
+            title: `Deposit Period Ends`,
+            // the deposit period can end before the time as the limit is reached already
+            time:
+              proposal.voting_start_time !== GOLANG_NULL_TIME &&
                 new Date(proposal.voting_start_time) <
-                  new Date(proposal.deposit_end_time)
-                  ? proposal.voting_start_time
-                  : proposal.deposit_end_time,
-            }
+                new Date(proposal.deposit_end_time)
+                ? proposal.voting_start_time
+                : proposal.deposit_end_time,
+          }
           : undefined,
         proposal.voting_start_time
           ? {
-              title: `Voting Period Starts`,
-              time:
-                proposal.voting_start_time !== GOLANG_NULL_TIME
-                  ? proposal.voting_start_time
-                  : undefined,
-            }
+            title: `Voting Period Starts`,
+            time:
+              proposal.voting_start_time !== GOLANG_NULL_TIME
+                ? proposal.voting_start_time
+                : undefined,
+          }
           : undefined,
         proposal.voting_end_time
           ? {
-              title: `Voting Period Ends`,
-              time:
-                proposal.voting_end_time !== GOLANG_NULL_TIME
-                  ? proposal.voting_end_time
-                  : undefined,
-            }
+            title: `Voting Period Ends`,
+            time:
+              proposal.voting_end_time !== GOLANG_NULL_TIME
+                ? proposal.voting_end_time
+                : undefined,
+          }
           : undefined,
       ].filter((x) => !!x),
     }
@@ -360,7 +357,7 @@ export default class CosmosAPI {
       pool,
     ] = await Promise.all([
       this.query('cosmos/gov/v1beta1/proposals'),
-      this.getBlock(1),
+      this.getBlock(5200791),
       this.query('cosmos/staking/v1beta1/pool'),
     ])
     if (!Array.isArray(proposalsResponse)) return []
@@ -397,7 +394,7 @@ export default class CosmosAPI {
         )
       }),
       this.query(`/cosmos/staking/v1beta1/pool`),
-      this.getBlock(1),
+      this.getBlock(5200791),
     ])
     const [tally, detailedVotes, proposer] = await this.getProposalMetaData(
       proposal,
@@ -482,7 +479,7 @@ export default class CosmosAPI {
 
   async getBalances(address) {
     const [balancesResponse, delegations, undelegations] = await Promise.all([
-      this.query(`cosmos/bank/v1beta1/balances/${address}`),
+      this.queryAutoPaginate(`cosmos/bank/v1beta1/balances/${address}`),
       this.getDelegationsForDelegator(address),
       this.getUndelegationsForDelegator(address),
     ])
@@ -555,8 +552,8 @@ export default class CosmosAPI {
   async getDelegationsForDelegator(address) {
     await this.dataReady
     const delegations =
-      (await this.query(
-        `cosmos/staking/v1beta1/delegators/${address}/delegations`
+      (await this.queryAutoPaginate(
+        `cosmos/staking/v1beta1/delegations/${address}`
       )) || []
     return delegations
       .map((delegation) =>
@@ -572,7 +569,7 @@ export default class CosmosAPI {
   async getUndelegationsForDelegator(address) {
     await this.dataReady
     const undelegations =
-      (await this.query(
+      (await this.queryAutoPaginate(
         `cosmos/staking/v1beta1/delegators/${address}/unbonding_delegations`
       )) || []
 
