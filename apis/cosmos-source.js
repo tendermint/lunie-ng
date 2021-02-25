@@ -36,16 +36,35 @@ export default class CosmosAPI {
 
   // querying data from the cosmos REST API
   // some endpoints /blocks and /txs have a different response format so they use this.get directly
-  async query(url, resultSelector = 'result') {
+  async query(url) {
     try {
       const response = await this.get(url)
-      return response[resultSelector]
+      return response
     } catch (error) {
       console.error(
         `Error for query ${url} in network ${this.network.name} (tried 3 times)`
       )
       throw error
     }
+  }
+
+  async queryPaginate(url, key) {
+    return await this.query(url + `?pagination.key=${key}`)
+  }
+
+  async queryAutoPaginate(url) {
+    var data = await this.query(url)
+    const keys = Object.keys(data)
+    const fieldIndex = keys.indexOf("pagination")? 0 : 1
+    const fieldName = keys[fieldIndex]
+    console.log(`Using field ${fieldName}`)
+
+    var paginatedData = data[fieldName]
+    while (data.pagination.next_key != null) {
+      data = await this.queryPaginate(url, data.pagination.next_key)
+      paginatedData = paginatedData.concat(data[fieldName])
+    }
+    return paginatedData
   }
 
   async getAccountInfo(address) {
@@ -58,56 +77,61 @@ export default class CosmosAPI {
     }
   }
 
+  async getAccountTxs(account) { // to be replaced
+    return await axios.get(`https://api.cosmostation.io/v1/account/txs/${account}`)    
+  }
+
   async getSignedBlockWindow() {
     const slashingParams = await this.query(`/cosmos/slashing/v1beta1/params`)
     return slashingParams.params.signed_blocks_window
   }
 
   async getTransactions(address, pageNumber = 0) {
-    // getting page count
-    const [senderPage, recipientPage] = await Promise.all([
-      this.getPageCount(`/cosmos/tx/v1beta1/txs?message.sender=${address}`),
-      this.getPageCount(`/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`),
-    ])
+    // // getting page count
+    // const [senderPage, recipientPage] = await Promise.all([
+    //   this.getPageCount(`/cosmos/tx/v1beta1/txs?message.sender=${address}`),
+    //   this.getPageCount(`/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`),
+    // ])
 
-    const requests = [
-      this.loadPaginatedTxs(
-        `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
-        senderPage - pageNumber
-      ),
-      this.loadPaginatedTxs(
-        `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
-        recipientPage - pageNumber
-      ),
-    ]
-    /*
-      if it's a first requests we need to load two pages, instead of one,
-      cause last page could contain less records than any other (even 1)
-      To do this asynchronously we need to do it with Promise.all
-      and not wait until last page is loaded
-    */
-    if (!pageNumber) {
-      if (senderPage - pageNumber > 1) {
-        requests.push(
-          this.loadPaginatedTxs(
-            `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
-            senderPage - pageNumber - 1
-          )
-        )
-      }
-      if (recipientPage - pageNumber > 1) {
-        requests.push(
-          this.loadPaginatedTxs(
-            `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
-            recipientPage - pageNumber - 1
-          )
-        )
-      }
-    }
+    // const requests = [
+    //   this.loadPaginatedTxs(
+    //     `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
+    //     senderPage - pageNumber
+    //   ),
+    //   this.loadPaginatedTxs(
+    //     `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
+    //     recipientPage - pageNumber
+    //   ),
+    // ]
+    // /*
+    //   if it's a first requests we need to load two pages, instead of one,
+    //   cause last page could contain less records than any other (even 1)
+    //   To do this asynchronously we need to do it with Promise.all
+    //   and not wait until last page is loaded
+    // */
+    // if (!pageNumber) {
+    //   if (senderPage - pageNumber > 1) {
+    //     requests.push(
+    //       this.loadPaginatedTxs(
+    //         `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
+    //         senderPage - pageNumber - 1
+    //       )
+    //     )
+    //   }
+    //   if (recipientPage - pageNumber > 1) {
+    //     requests.push(
+    //       this.loadPaginatedTxs(
+    //         `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
+    //         recipientPage - pageNumber - 1
+    //       )
+    //     )
+    //   }
+    // }
 
-    const txs = await Promise.all(requests).then(([...results]) =>
-      [].concat(...results)
-    )
+    // const txs = await Promise.all(requests).then(([...results]) =>
+    //   [].concat(...results)
+    // )
+    const txs = await this.axios.get(`https://api.cosmostation.io/v1/account/txs/${address}`)
 
     return this.reducers.transactionsReducer(txs)
   }
@@ -116,7 +140,7 @@ export default class CosmosAPI {
     const signingInfos = await this.query(
       `cosmos/slashing/v1beta1/signing_infos`
     )
-    return signingInfos
+    return signingInfos.info
   }
 
   async getValidatorSet(height = 'latest') {
@@ -176,11 +200,7 @@ export default class CosmosAPI {
       validatorSet,
       signedBlocksWindow,
     ] = await Promise.all([
-      Promise.all([
-        this.query(`cosmos/staking/v1beta1/validators`),
-        // this.query(`cosmos/staking/v1beta1/validators?status=bonded`),
-        // this.query(`cosmos/staking/v1beta1/validators?status=unbonded`),
-      ]).then((validatorGroups) => [].concat(...validatorGroups)),
+      this.queryAutoPaginate(`cosmos/staking/v1beta1/validators`),
       this.getAnnualProvision().catch(() => undefined),
       this.getValidatorSet(height),
       this.getSignedBlockWindow(),
@@ -199,9 +219,10 @@ export default class CosmosAPI {
       'address'
     )
 
+    console.log(validators)
     validators.forEach((validator) => {
       const consensusAddress = pubkeyToAddress(
-        validator.consensus_pubkey,
+        validator.consensus_pubkey.key,
         network.validatorConsensusaddressPrefix
       )
       validator.votingPower = consensusValidators[consensusAddress]
