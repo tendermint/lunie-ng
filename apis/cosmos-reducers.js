@@ -520,18 +520,13 @@ export function proposalReducer(
   detailedVotes,
   validators
 ) {
+
   return {
     id: Number(proposal.id),
     proposalId: String(proposal.id),
-    type: proposalTypeEnumDictionary[proposal.content.type.split('/')[1]],
-    title: proposal.content.value.title,
-    description: proposal.content.value.changes
-      ? `Parameter: ${JSON.stringify(
-          proposal.content.value.changes,
-          null,
-          4
-        )}\nDescription: `
-      : `` + proposal.content.value.description,
+    type: proposalTypeEnumDictionary[proposal.content["@type"].split('/')[1]],
+    title: proposal.content.title,
+    description: proposal.content.description,
     creationTime: proposal.submit_time,
     status: getProposalStatus(proposal),
     statusBeginTime: proposalBeginTime(proposal),
@@ -542,7 +537,7 @@ export function proposalReducer(
       ? networkAccountReducer(proposer.proposer, validators)
       : undefined,
     summary: getProposalSummary(
-      proposalTypeEnumDictionary[proposal.content.type.split('/')[1]]
+      proposalTypeEnumDictionary[proposal.content["@type"].split('/')[1]]
     ),
     detailedVotes,
   }

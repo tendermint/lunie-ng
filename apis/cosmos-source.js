@@ -57,7 +57,6 @@ export default class CosmosAPI {
     const keys = Object.keys(data)
     const fieldIndex = keys.indexOf("pagination") ? 0 : 1
     const fieldName = keys[fieldIndex]
-    console.log(`Using field ${fieldName}`)
 
     var paginatedData = data[fieldName]
     while (data.pagination.next_key != null) {
@@ -219,7 +218,6 @@ export default class CosmosAPI {
       'address'
     )
 
-    console.log(validators)
     validators.forEach((validator) => {
       const consensusAddress = validator.address
       validator.votingPower = consensusValidators[consensusAddress]
@@ -258,7 +256,7 @@ export default class CosmosAPI {
       .plus(tally.abstain)
       .plus(tally.no)
       .plus(tally.no_with_veto)
-    const formattedDeposits = deposits
+    const formattedDeposits = deposits.length
       ? deposits.map((deposit) =>
         this.reducers.depositReducer(deposit, this.validators)
       )
@@ -270,14 +268,14 @@ export default class CosmosAPI {
       : undefined
     return {
       deposits: formattedDeposits,
-      depositsSum: deposits ? Number(depositsSum).toFixed(6) : undefined,
+      depositsSum: deposits.length ? Number(depositsSum).toFixed(6) : undefined,
       percentageDepositsNeeded: deposits
         ? percentage(
           depositsSum,
-          BigNumber(depositParameters.min_deposit[0].amount)
+          BigNumber(depositParameters.deposit_params.min_deposit[0].amount)
         )
         : undefined,
-      votes: votes
+      votes: votes.length
         ? votes.map((vote) => this.reducers.voteReducer(vote, this.validators))
         : undefined,
       votesSum: votes ? votes.length : undefined,
@@ -339,6 +337,8 @@ export default class CosmosAPI {
   }
 
   async getProposalMetaData(proposal, firstBlock) {
+
+    console.log(proposal)
     const [tally, detailedVotes, proposer] = await Promise.all([
       this.query(`cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/tally`),
       this.getDetailedVotes(proposal),
@@ -358,6 +358,7 @@ export default class CosmosAPI {
       this.getBlock(5200791),
       this.query('cosmos/staking/v1beta1/pool'),
     ])
+    console.log(        console.log("ok")    )
     if (!Array.isArray(proposalsResponse)) return []
     const proposals = await Promise.all(
       proposalsResponse.map(async (proposal) => {
@@ -365,6 +366,7 @@ export default class CosmosAPI {
           proposal,
           firstBlock
         )
+        console.log("ok")
         return this.reducers.proposalReducer(
           proposal,
           tally,
