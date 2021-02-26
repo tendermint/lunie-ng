@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="!proposalsLoaded && !proposal">
-      <Loader />
+      <CommonLoader />
     </div>
     <div v-else class="proposal">
       <ProposalHeader
@@ -19,7 +19,7 @@
         :proposal="proposal"
       />
 
-      <ParticipantList
+      <GovernanceParticipantList
         v-if="participants"
         :participants="participants"
         :show-amounts="true"

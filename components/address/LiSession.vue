@@ -16,7 +16,7 @@
 
 <script>
 export default {
-  name: `LiSession`,
+  name: `AddressLiSession`,
   props: {
     icon: {
       type: String,

@@ -2,12 +2,12 @@
   <Form :submit="onSubmit">
     <h2 class="session-title">Choose a password</h2>
     <div>
-      <FormGroup
+      <CommonFormGroup
         :error="$v.fieldPassword.$error"
         field-id="sign-up-password"
         field-label="Password"
       >
-        <Field
+        <CommonField
           id="sign-up-password"
           v-model="fieldPassword"
           v-focus
@@ -25,13 +25,13 @@
           type="minLength"
           min="10"
         />
-      </FormGroup>
-      <FormGroup
+      </CommonFormGroup>
+      <CommonFormGroup
         :error="$v.fieldPasswordConfirm.$error"
         field-id="sign-up-password-confirm"
         field-label="Confirm Password"
       >
-        <Field
+        <CommonField
           id="sign-up-password-confirm"
           v-model="fieldPasswordConfirm"
           type="password"
@@ -45,7 +45,7 @@
           name="Password confirmation"
           type="match"
         />
-      </FormGroup>
+      </CommonFormGroup>
       <div class="session-footer">
         <Button value="Next" type="submit" />
       </div>

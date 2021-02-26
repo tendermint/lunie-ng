@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div v-if="!loaded">
-      <Loader />
+      <CommonLoader />
     </div>
     <table v-else-if="length" class="table">
       <thead>
-        <TableHeader
+        <CommonTableHeader
           :sort="sort"
           :properties="columns"
           :show-row-count="showRowCount"
@@ -27,7 +27,7 @@
 
 <script>
 export default {
-  name: 'TableContainer',
+  name: 'CommonTableContainer',
   props: {
     length: {
       type: Number,

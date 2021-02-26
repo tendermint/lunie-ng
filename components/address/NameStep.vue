@@ -1,49 +1,49 @@
 <template>
-  <Form :submit="onSubmit">
+  <CommonForm :submit="onSubmit">
     <h2 class="session-title">Create a new address</h2>
     <div class="session-main bottom-indent">
-      <Warning>
+      <CommonWarning>
         <h2 slot="title">🚨 Danger Zone</h2>
         <p slot="message">
           This feature is only for testing and development. Creating an address
           in the browser is not advised. Proceed with caution.
         </p>
-      </Warning>
-      <FormGroup
+      </CommonWarning>
+      <CommonFormGroup
         :error="$v.fieldName.$error"
         field-id="sign-up-name"
         field-label="Account Name"
       >
-        <Field
+        <CommonField
           id="sign-up-name"
           v-model.trim="fieldName"
           v-focus
           type="text"
           placeholder="Must be at least 3 characters"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldName.$error && !$v.fieldName.required"
           name="Name"
           type="required"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldName.$error && !$v.fieldName.minLength"
           name="Name"
           type="minLength"
           min="3"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldName.$error && !$v.fieldName.nameExists"
           name="Name"
           type="custom"
           msg="already exists"
         />
-      </FormGroup>
+      </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <Button value="Next" type="submit" />
+      <CommonButton value="Next" type="submit" />
     </div>
-  </Form>
+  </CommonForm>
 </template>
 
 <script>

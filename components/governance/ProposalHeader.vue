@@ -7,7 +7,7 @@
         </div>
 
         <div class="inner-status">
-          <Status :label="status.value" />
+          <CommonStatus :label="status.value" />
         </div>
 
         <div class="buttons">
@@ -21,7 +21,7 @@
             @click.native="$emit(`open-deposit-modal`)"
           />
           <Button
-            v-if="status.value === this.governanceStatusEnum.VOTING"
+            v-if="status.value === governanceStatusEnum.VOTING"
             id="vote-btn"
             class="action-button"
             value="Vote"
@@ -32,7 +32,7 @@
       </div>
 
       <div class="outer-status">
-        <Status :label="status.value" />
+        <CommonStatus :label="status.value" />
       </div>
     </div>
 
@@ -44,7 +44,7 @@
           <span>Proposed By:</span>
           <div v-if="proposal.proposer.validator" class="proposer-details">
             <div>
-              <Avatar
+              <CommonAvatar
                 class="proposer-image"
                 :address="proposal.proposer.address"
               />

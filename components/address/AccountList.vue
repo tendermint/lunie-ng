@@ -8,7 +8,7 @@
         <div class="account">
           <div class="account-info">
             <h3>{{ account.name }}</h3>
-            <Address :address="account.address" />
+            <CommonAddress :address="account.address" />
             <span
               v-if="account.sessionType && !isExtension"
               class="session-type"
@@ -16,7 +16,7 @@
             >
           </div>
           <div class="action-container">
-            <Button
+            <CommonButton
               v-if="buttonAction"
               class="account-button"
               :value="buttonText"

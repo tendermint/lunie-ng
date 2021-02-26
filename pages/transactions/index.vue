@@ -1,15 +1,15 @@
 <template>
   <div class="transactions">
     <div v-if="!transactionsLoaded" class="container">
-      <Loader />
+      <CommonLoader />
     </div>
 
-    <Card v-else-if="!transactions.length" icon="receipt">
+    <CommonCard v-else-if="!transactions.length" icon="receipt">
       <div slot="title">No transactions</div>
       <div slot="subtitle">
         {{ oldChainDataMessage }}
       </div>
-    </Card>
+    </CommonCard>
 
     <template v-else>
       <EventList

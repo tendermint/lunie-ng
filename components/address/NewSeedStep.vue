@@ -4,7 +4,7 @@
     <div class="session-main bottom-indent reorder">
       <Seed :value="fieldSeed" />
 
-      <FormGroup
+      <CommonFormGroup
         :error="$v.fieldWarning.$error"
         class="field-checkbox"
         field-id="sign-up-warning"
@@ -31,7 +31,7 @@
           name="Recovery confirmation"
           type="required"
         />
-      </FormGroup>
+      </CommonFormGroup>
     </div>
     <div class="session-footer">
       <Button value="Next" type="submit" />

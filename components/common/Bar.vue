@@ -5,7 +5,7 @@
         <p>
           <slot />
         </p>
-        <Button
+        <CommonButton
           v-if="linkCaption"
           class="button small"
           :value="linkCaption"

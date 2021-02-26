@@ -1,41 +1,41 @@
 <template>
-  <Form :submit="onSubmit">
+  <CommonForm :submit="onSubmit">
     <h2 class="session-title">{{ title }}</h2>
     <div class="session-main bottom-indent">
-      <FormGroup
+      <CommonFormGroup
         :error="$v.$error && $v.fieldSeed.$invalid"
         field-id="import-seed"
         field-label="Seed Phrase"
       >
-        <FieldSeed
+        <CommonFieldSeed
           id="import-seed"
           :value="fieldSeed"
           :placeholder="'Must be exactly 12 or 24 words'"
           @input="(val) => (fieldSeed = val)"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldSeed.$error && !$v.fieldSeed.required"
           name="Seed"
           type="required"
         />
-        <FormMessage
+        <CommonFormMessage
           v-else-if="$v.fieldSeed.$error && !$v.fieldSeed.seedHasCorrectLength"
           name="Seed"
           type="words12or24"
         />
-        <FormMessage
+        <CommonFormMessage
           v-else-if="
             $v.fieldSeed.$error && !$v.fieldSeed.seedIsLowerCaseAndSpaces
           "
           name="Seed"
           type="lowercaseAndSpaces"
         />
-      </FormGroup>
+      </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <Button value="Next" type="submit" />
+      <CommonButton value="Next" type="submit" />
     </div>
-  </Form>
+  </CommonForm>
 </template>
 
 <script>

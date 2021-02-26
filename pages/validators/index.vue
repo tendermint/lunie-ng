@@ -1,16 +1,20 @@
 <template>
   <div>
     <div class="filterContainer">
-      <Field v-model="searchTerm" class="searchField" placeholder="Search" />
+      <CommonField
+        v-model="searchTerm"
+        class="searchField"
+        placeholder="Search"
+      />
       <div class="filterOptions">
         <div class="toggles">
-          <Button
+          <CommonButton
             value="All"
             class="toggle-button"
             :type="allValidators ? `active` : `secondary`"
             @click.native="defaultSelectorsController(`allValidators`)"
           />
-          <Button
+          <CommonButton
             value="Active"
             class="toggle-button"
             :type="activeOnly ? `active` : `secondary`"
@@ -20,7 +24,7 @@
       </div>
     </div>
 
-    <TableValidators
+    <StakingTableValidators
       class="table-validators"
       :validators="filteredValidators"
       :delegations="delegations"

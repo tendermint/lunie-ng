@@ -2,8 +2,8 @@
   <Form :submit="onSubmit">
     <h2 class="session-title bottom-indent">Explore with any address</h2>
     <div class="session-main">
-      <FormGroup field-label="Your Address">
-        <Field v-model.trim="address" type="text" />
+      <CommonFormGroup field-label="Your Address">
+        <CommonField v-model.trim="address" type="text" />
         <FormMessage
           v-if="$v.address.$error && !$v.address.required"
           name="Address"
@@ -15,7 +15,7 @@
           :msg="addressError"
         />
         <FormMessage v-if="error" :name="error" type="custom" />
-      </FormGroup>
+      </CommonFormGroup>
     </div>
     <div class="session-footer">
       <Button value="Explore" />

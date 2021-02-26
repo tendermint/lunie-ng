@@ -6,10 +6,10 @@
   >
     <td class="cell index">{{ index + 1 }}</td>
     <td class="cell">
-      <Status :label="validator.status" />
+      <CommonStatus :label="validator.status" />
     </td>
     <td class="cell validator-info">
-      <Avatar
+      <CommonAvatar
         class="validator-image"
         alt="generic validator logo - generated avatar from address"
         :address="validator.operatorAddress"

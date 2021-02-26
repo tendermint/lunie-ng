@@ -1,6 +1,6 @@
 <template>
   <div class="step--container">
-    <Step
+    <CommonStep
       v-for="step in steps"
       :key="step"
       :title="step"

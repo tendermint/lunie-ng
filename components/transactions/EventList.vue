@@ -3,7 +3,7 @@
     <template v-for="group in groupedEvents">
       <div :key="group[0].section">
         <h3>{{ group[0].section }}</h3>
-        <TransactionItem
+        <TransactionsTransactionItem
           v-for="item in group"
           :key="item.event.key"
           :transaction="item.event"

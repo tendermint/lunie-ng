@@ -1,11 +1,11 @@
 <template>
-  <TableContainer
+  <CommonTableContainer
     :length="sortedEnrichedValidators.length"
     :columns="properties"
     :sort="sort"
     :loaded="loaded"
   >
-    <ValidatorRow
+    <StakingValidatorRow
       v-for="(validator, index) in sortedEnrichedValidators"
       :key="validator.operatorAddress"
       :index="index"
@@ -17,7 +17,7 @@
     <template slot="empty">
       <slot name="empty"></slot>
     </template>
-  </TableContainer>
+  </CommonTableContainer>
 </template>
 
 <script>
@@ -25,7 +25,7 @@ import { orderBy } from 'lodash'
 import network from '~/common/network'
 
 export default {
-  name: `TableValidators`,
+  name: `StakingTableValidators`,
   components: {},
   props: {
     validators: {

@@ -25,12 +25,12 @@
         />
       </div>
       <div v-if="requiresSignIn" class="action-modal-form">
-        <Card icon="language">
+        <CommonCard icon="language">
           <div slot="title">You're in explore mode</div>
           <div slot="subtitle">
             Sign in with a Ledger Nano or browser extension to proceed.
           </div>
-        </Card>
+        </CommonCard>
       </div>
       <div v-else-if="step === defaultStep" class="action-modal-form">
         <slot />
@@ -52,12 +52,12 @@
           v-if="session.sessionType === SESSION_TYPES.LOCAL"
           @submit.prevent="validateChangeStep"
         >
-          <FormGroup
+          <CommonFormGroup
             class="action-modal-group"
             field-id="password"
             field-label="Password"
           >
-            <Field
+            <CommonField
               id="password"
               v-model="password"
               v-focus
@@ -69,9 +69,9 @@
               name="Password"
               type="required"
             />
-          </FormGroup>
+          </CommonFormGroup>
         </form>
-        <Card
+        <CommonCard
           v-if="
             session.sessionType === SESSION_TYPES.EXTENSION ||
             session.sessionType === SESSION_TYPES.KEPLR ||
@@ -81,21 +81,21 @@
           <div slot="subtitle">
             {{ getExternalSessionMessage(session.sessionType) }}
           </div>
-        </Card>
+        </CommonCard>
       </div>
       <div v-else-if="step === inclusionStep" class="action-modal-form">
-        <Card icon="hourglass_empty" :spin="true">
+        <CommonCard icon="hourglass_empty" :spin="true">
           <div slot="title">Sent and confirming</div>
           <div slot="subtitle">
             Waiting for confirmation from {{ network.name }}.
           </div>
-        </Card>
+        </CommonCard>
       </div>
       <div
         v-else-if="step === successStep"
         class="action-modal-form success-step"
       >
-        <Card icon="check" icon-color="var(--success)" :success="true">
+        <CommonCard icon="check" icon-color="var(--success)" :success="true">
           <div slot="title">{{ notifyMessage.title }}</div>
           <div slot="subtitle">
             {{ notifyMessage.body }}
@@ -103,15 +103,15 @@
             <br />
             <router-link to="/transactions">See your transaction</router-link>
           </div>
-        </Card>
+        </CommonCard>
       </div>
-      <Card
+      <CommonCard
         v-if="submissionError"
         class="form-msg sm form-msg--error submission-error"
       >
         <div slot="title">{{ submissionErrorPrefix }}</div>
         <div slot="subtitle">{{ submissionError }}</div>
-      </Card>
+      </CommonCard>
       <div class="action-modal-footer">
         <slot name="action-modal-footer">
           <div
@@ -184,7 +184,7 @@ const SESSION_TYPES = {
 }
 
 export default {
-  name: `ActionModal`,
+  name: `ModalAction`,
   filters: {
     prettyInt,
   },
@@ -360,7 +360,7 @@ export default {
     async validateChangeStep() {
       if (this.disabled) return
 
-      // An ActionModal is only the prototype of a parent modal
+      // An ModalAction is only the prototype of a parent modal
       switch (this.step) {
         case defaultStep:
           if (!this.isValidChildForm) {

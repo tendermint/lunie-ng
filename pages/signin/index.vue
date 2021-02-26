@@ -3,8 +3,8 @@
     <Form :submit="onSubmit" class="session-container">
       <h2 class="session-title">Sign in with account</h2>
       <div class="session-main bottom-indent">
-        <FormGroup field-id="sign-in-name" field-label="Select Account">
-          <Field
+        <CommonFormGroup field-id="sign-in-name" field-label="Select Account">
+          <CommonField
             id="sign-in-name"
             v-model="signInAddress"
             v-focus
@@ -17,14 +17,14 @@
             name="Name"
             type="required"
           />
-        </FormGroup>
+        </CommonFormGroup>
 
-        <FormGroup
+        <CommonFormGroup
           :error="$v.signInPassword.$error"
           field-id="sign-in-password"
           field-label="Password"
         >
-          <Field
+          <CommonField
             id="sign-in-password"
             v-model="signInPassword"
             type="password"
@@ -41,7 +41,7 @@
             min="10"
           />
           <FormMessage v-if="error" type="custom" :msg="error" />
-        </FormGroup>
+        </CommonFormGroup>
       </div>
       <div class="session-footer">
         <Button value="Sign In" :disabled="loading" />

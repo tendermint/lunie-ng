@@ -1,7 +1,7 @@
 <template>
-  <ActionModal
+  <ModalAction
     id="undelegation-modal"
-    ref="actionModal"
+    ref="ModalAction"
     :validate="validateForm"
     :amounts="[]"
     title="Unstake"
@@ -14,21 +14,26 @@
     @close="clear"
     @txIncluded="onSuccess"
   >
-    <FormGroup
+    <CommonFormGroup
       class="action-modal-form-group"
       field-id="from"
       field-label="From"
     >
-      <Field id="from" :value="enhancedSourceValidator" type="text" readonly />
-    </FormGroup>
-    <FormGroup
+      <CommonField
+        id="from"
+        :value="enhancedSourceValidator"
+        type="text"
+        readonly
+      />
+    </CommonFormGroup>
+    <CommonFormGroup
       :error="$v.amount.$error && $v.amount.$invalid"
       class="action-modal-form-group"
       field-id="amount"
       field-label="Amount"
     >
       <div class="row">
-        <Field
+        <CommonField
           id="amount"
           v-model="amount"
           v-focus
@@ -76,8 +81,8 @@
         name="Amount"
         type="maxDecimals"
       />
-    </FormGroup>
-  </ActionModal>
+    </CommonFormGroup>
+  </ModalAction>
 </template>
 
 <script>
@@ -158,7 +163,7 @@ export default {
   },
   methods: {
     open() {
-      this.$refs.actionModal.open()
+      this.$refs.ModalAction.open()
     },
     validateForm() {
       this.$v.$touch()
@@ -173,7 +178,7 @@ export default {
       this.amount = this.maximum
     },
     enterPressed() {
-      this.$refs.actionModal.validateChangeStep()
+      this.$refs.ModalAction.validateChangeStep()
     },
     onSuccess(event) {
       this.$emit(`success`, event)

@@ -19,7 +19,7 @@
 <script>
 // import { showAddressOnLedger } from 'scripts/ledger'
 export default {
-  name: `UserMenuAddress`,
+  name: `CommonUserMenuAddress`,
   props: {
     address: {
       type: String,

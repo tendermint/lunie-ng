@@ -14,7 +14,7 @@
       >
         <div class="first-column">
           <span class="icon">
-            <Avatar :address="participant.address" />
+            <CommonAvatar :address="participant.address" />
           </span>
           <span v-if="participant.name" class="name">{{
             participant.name

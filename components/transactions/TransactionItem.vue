@@ -30,7 +30,7 @@
           </div>
           <div v-if="includesValidatorAddresses" class="validator-images">
             <template v-for="(address, index) in transaction.details.from">
-              <Avatar
+              <CommonAvatar
                 :key="index + '_from_avatar'"
                 class="validator-image"
                 alt="placeholder color for validator image"
@@ -40,7 +40,7 @@
               />
             </template>
             <template v-for="(address, index) in transaction.details.to">
-              <Avatar
+              <CommonAvatar
                 :key="index + '_to_avatar'"
                 class="validator-image"
                 alt="placeholder color for validator image"
