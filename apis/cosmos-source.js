@@ -3,7 +3,7 @@
 import BigNumber from 'bignumber.js'
 import { keyBy, orderBy, take, reverse, sortBy, chunk } from 'lodash'
 import * as reducers from './cosmos-reducers'
-import { encodeB32, decodeB32, pubkeyToAddress } from '~/common/address'
+import { encodeB32, decodeB32 } from '~/common/address'
 import { setDecimalLength } from '~/common/numbers'
 import network from '~/common/network'
 
@@ -139,7 +139,7 @@ export default class CosmosAPI {
     const signingInfos = await this.queryAutoPaginate(
       `cosmos/slashing/v1beta1/signing_infos`
     )
-    return signingInfos.info
+    return signingInfos
   }
 
   async getValidatorSet(height = 'latest') {
@@ -338,7 +338,6 @@ export default class CosmosAPI {
 
   async getProposalMetaData(proposal, firstBlock) {
 
-    console.log(proposal)
     const [tally, detailedVotes, proposer] = await Promise.all([
       this.query(`cosmos/gov/v1beta1/proposals/${proposal.proposal_id}/tally`),
       this.getDetailedVotes(proposal),
@@ -358,7 +357,6 @@ export default class CosmosAPI {
       this.getBlock(5200791),
       this.query('cosmos/staking/v1beta1/pool'),
     ])
-    console.log(        console.log("ok")    )
     if (!Array.isArray(proposalsResponse)) return []
     const proposals = await Promise.all(
       proposalsResponse.map(async (proposal) => {
@@ -366,7 +364,6 @@ export default class CosmosAPI {
           proposal,
           firstBlock
         )
-        console.log("ok")
         return this.reducers.proposalReducer(
           proposal,
           tally,
