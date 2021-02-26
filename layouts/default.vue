@@ -1,7 +1,7 @@
 <template>
   <div id="app" class="lunie-light">
-    <AppHeader />
-    <Notifications />
+    <CommonAppHeader />
+    <CommonNotifications />
     <div id="app-content">
       <Nuxt />
     </div>
