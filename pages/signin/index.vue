@@ -44,7 +44,7 @@
         </CommonFormGroup>
       </div>
       <div class="session-footer">
-        <Button value="Sign In" :disabled="loading" />
+        <CommonButton value="Sign In" :disabled="loading" />
       </div>
     </Form>
   </div>

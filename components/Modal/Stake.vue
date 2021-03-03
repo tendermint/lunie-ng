@@ -43,7 +43,7 @@
           type="number"
           @keyup.enter.native="enterPressed"
         />
-        <Button
+        <CommonButton
           type="button"
           class="secondary addon-max"
           value="Max"

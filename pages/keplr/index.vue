@@ -3,7 +3,7 @@
     <h2 class="session-title">Keplr Browser Extension</h2>
 
     <div v-if="!accounts.length && !initialized" class="session-main">
-      <Button
+      <CommonButton
         value="Connect Keplr Extension"
         :loading="loading"
         @click.native="connect"
@@ -34,7 +34,7 @@
         Below is a list of accounts we've received from the Keplr browser
         extension.
       </p>
-      <AccountList
+      <AddressAccountList
         :accounts="accounts"
         :button-action="signInAndRedirect"
         :button-text="`Use Account`"

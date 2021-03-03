@@ -12,7 +12,7 @@
 
         <div class="buttons">
           <CopyButton :value="currentRoute" />
-          <Button
+          <CommonButton
             v-if="status.value === governanceStatusEnum.DEPOSITING"
             id="deposit-btn"
             class="action-button"
@@ -20,7 +20,7 @@
             color="primary"
             @click.native="$emit(`open-deposit-modal`)"
           />
-          <Button
+          <CommonButton
             v-if="status.value === governanceStatusEnum.VOTING"
             id="vote-btn"
             class="action-button"

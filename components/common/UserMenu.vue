@@ -10,7 +10,7 @@
       </i>
     </div>
     <template v-else>
-      <Button
+      <CommonButton
         value="Get Started"
         class="menu-button"
         type="secondary"

@@ -50,7 +50,7 @@
     </CommonCard>
 
     <div class="session-main">
-      <Button
+      <CommonButton
         value="Connect Ledger"
         :loading="loading"
         @click.native="connect"

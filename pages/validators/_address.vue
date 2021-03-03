@@ -31,8 +31,8 @@
           </div>
         </div>
         <div class="action-buttons">
-          <Button :value="`Stake`" @click.native="openStakeModal" />
-          <Button
+          <CommonButton :value="`Stake`" @click.native="openStakeModal" />
+          <CommonButton
             :disabled="!delegation"
             :value="`Unstake`"
             type="secondary"

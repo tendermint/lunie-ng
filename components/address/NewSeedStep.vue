@@ -34,7 +34,7 @@
       </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <Button value="Next" type="submit" />
+      <CommonButton value="Next" type="submit" />
     </div>
   </Form>
 </template>

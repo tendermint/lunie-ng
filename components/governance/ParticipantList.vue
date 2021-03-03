@@ -43,7 +43,7 @@
       </li>
     </ul>
     <div v-if="moreAvailable" class="loadmore-button-container">
-      <Button
+      <CommonButton
         id="loadMoreBtn"
         value="Load More"
         type="secondary"

@@ -118,13 +118,13 @@
             v-if="[defaultStep, feeStep, signStep].includes(step)"
             class="action-modal-group"
           >
-            <Button
+            <CommonButton
               id="closeBtn"
               value="Cancel"
               type="secondary"
               @click.native="close"
             />
-            <Button
+            <CommonButton
               v-if="requiresSignIn"
               v-focus
               value="Sign In"
@@ -132,13 +132,13 @@
               @click.native="goToSession"
               @click.enter.native="goToSession"
             />
-            <Button
+            <CommonButton
               v-else-if="sending"
               value="Sending..."
               disabled="disabled"
               type="primary"
             />
-            <Button
+            <CommonButton
               v-else-if="step !== signStep"
               ref="next"
               type="primary"
@@ -147,7 +147,7 @@
               :disabled="disabled || !balancesLoaded"
               @click.native="validateChangeStep"
             />
-            <Button
+            <CommonButton
               v-else
               type="primary"
               value="Send"

@@ -18,7 +18,7 @@
       </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <Button value="Explore" />
+      <CommonButton value="Explore" />
     </div>
   </Form>
 </template>
