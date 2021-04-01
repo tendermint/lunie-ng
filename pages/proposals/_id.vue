@@ -1,17 +1,17 @@
 <template>
   <div>
     <div v-if="!proposalsLoaded && !proposal">
-      <Loader />
+      <CommonLoader />
     </div>
     <div v-else class="proposal">
-      <ProposalHeader
+      <GovernanceProposalHeader
         :proposal="proposal"
         :status="status"
         @open-vote-modal="onVote"
         @open-deposit-modal="onDeposit"
       />
 
-      <ProposalStatusBar
+      <GovernanceProposalStatusBar
         v-if="tallyHasValues"
         :status="status"
         :status-begin-time="proposal.statusBeginTime"
@@ -19,19 +19,19 @@
         :proposal="proposal"
       />
 
-      <ParticipantList
+      <GovernanceParticipantList
         v-if="participants"
         :participants="participants"
         :show-amounts="true"
       />
 
       <template v-if="proposal.detailedVotes.timeline.length">
-        <Timeline :timeline="proposal.detailedVotes.timeline" />
+        <GovernanceTimeline :timeline="proposal.detailedVotes.timeline" />
       </template>
 
-      <ProposalDescription :proposal="proposal" />
+      <GovernanceProposalDescription :proposal="proposal" />
 
-      <DepositModal
+      <ModalDeposit
         v-if="status.value === governanceStatusEnum.DEPOSITING"
         ref="modalDeposit"
         :proposal-id="proposalId"
@@ -40,7 +40,7 @@
         :deposits="proposal.detailedVotes.deposits"
         @success="() => afterVoteOrDeposit()"
       />
-      <VoteModal
+      <ModalVote
         v-else
         ref="modalVote"
         :proposal-id="proposalId"

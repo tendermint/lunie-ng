@@ -1,13 +1,13 @@
 <template>
   <div class="notification-container">
-    <Bar
+    <CommonBar
       v-for="notification in notifications.notifications"
       :key="notification.id"
       :bar-type="notification.type"
       @close="$store.commit('notifications/remove', notification.id)"
     >
       {{ notification.message }}
-    </Bar>
+    </CommonBar>
   </div>
 </template>
 

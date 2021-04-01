@@ -1,5 +1,5 @@
 <template>
-  <Field
+  <CommonField
     :value="value"
     class="tm-field-seed"
     type="textarea"

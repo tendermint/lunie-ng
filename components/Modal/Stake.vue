@@ -1,7 +1,7 @@
 <template>
-  <ActionModal
+  <ModalAction
     id="delegation-modal"
-    ref="actionModal"
+    ref="ModalAction"
     :validate="validateForm"
     :amounts="[{ amount, denom: stakingDenom }]"
     title="Stake"
@@ -14,23 +14,28 @@
     @close="clear"
     @txIncluded="onSuccess"
   >
-    <FormGroup
+    <CommonFormGroup
       v-if="Object.keys(targetValidator).length > 0"
       class="action-modal-form-group"
       field-id="to"
       field-label="To"
     >
-      <Field id="to" :value="enhancedTargetValidator" type="text" readonly />
-    </FormGroup>
+      <CommonField
+        id="to"
+        :value="enhancedTargetValidator"
+        type="text"
+        readonly
+      />
+    </CommonFormGroup>
 
-    <FormGroup
+    <CommonFormGroup
       :error="$v.amount.$error && $v.amount.$invalid"
       class="action-modal-form-group"
       field-id="amount"
       field-label="Amount"
     >
       <div class="row">
-        <Field
+        <CommonField
           id="amount"
           v-model="amount"
           v-focus
@@ -38,7 +43,7 @@
           type="number"
           @keyup.enter.native="enterPressed"
         />
-        <Button
+        <CommonButton
           type="button"
           class="secondary addon-max"
           value="Max"
@@ -88,8 +93,8 @@
         type="custom"
         class="tm-form-msg--desc"
       />
-    </FormGroup>
-  </ActionModal>
+    </CommonFormGroup>
+  </ModalAction>
 </template>
 
 <script>
@@ -210,7 +215,7 @@ export default {
   },
   methods: {
     open() {
-      this.$refs.actionModal.open()
+      this.$refs.ModalAction.open()
     },
     validateForm() {
       this.$v.$touch()
@@ -233,7 +238,7 @@ export default {
       }
     },
     enterPressed() {
-      this.$refs.actionModal.validateChangeStep()
+      this.$refs.ModalAction.validateChangeStep()
     },
     onSuccess(event) {
       this.$emit(`success`, event)

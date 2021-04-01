@@ -2,21 +2,21 @@
   <div class="table-container">
     <div class="header-container">
       <h1>Your Balances</h1>
-      <Button
+      <CommonButton
         id="claim-button"
         :disabled="!readyToWithdraw || !balancesLoaded"
         value="Claim Rewards"
         @click.native="readyToWithdraw && openClaimModal()"
       />
     </div>
-    <TableContainer
+    <CommonTableContainer
       :length="sortedBalances.length"
       :columns="properties"
       :sort="sort"
       :show-row-count="false"
       :loaded="balancesLoaded"
     >
-      <BalanceRow
+      <PortfolioBalanceRow
         v-for="balance in sortedBalances"
         :key="balance.id"
         :balances="balances"
@@ -25,9 +25,9 @@
         :send="true"
         @open-send-modal="openSendModal(balance.denom)"
       />
-    </TableContainer>
-    <LazySendModal ref="SendModal" :denoms="getAllDenoms" />
-    <LazyClaimModal
+    </CommonTableContainer>
+    <LazyModalSend ref="SendModal" :denoms="getAllDenoms" />
+    <LazyModalClaim
       ref="ClaimModal"
       :address="session.address"
       :rewards="rewards"

@@ -18,30 +18,30 @@
           <i class="material-icons notranslate">close</i>
         </div>
         <span class="action-modal-title">{{ title }}</span>
-        <Steps
+        <CommonSteps
           v-if="[defaultStep, feeStep, signStep].includes(step)"
           :steps="steps"
           :active-step="step"
         />
       </div>
       <div v-if="requiresSignIn" class="action-modal-form">
-        <Card icon="language">
+        <CommonCard icon="language">
           <div slot="title">You're in explore mode</div>
           <div slot="subtitle">
             Sign in with a Ledger Nano or browser extension to proceed.
           </div>
-        </Card>
+        </CommonCard>
       </div>
       <div v-else-if="step === defaultStep" class="action-modal-form">
         <slot />
       </div>
       <div v-else-if="step === feeStep" class="action-modal-form">
-        <TableInvoice
+        <ModalTableInvoice
           v-model="feeDenom"
           :amounts="amounts"
           :fees="networkFees.feeOptions"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.invoiceTotal.$error && $v.invoiceTotal.$invalid"
           type="custom"
           :msg="`Your balance is not enough to proceed.`"
@@ -52,12 +52,12 @@
           v-if="session.sessionType === SESSION_TYPES.LOCAL"
           @submit.prevent="validateChangeStep"
         >
-          <FormGroup
+          <CommonFormGroup
             class="action-modal-group"
             field-id="password"
             field-label="Password"
           >
-            <Field
+            <CommonField
               id="password"
               v-model="password"
               v-focus
@@ -69,9 +69,9 @@
               name="Password"
               type="required"
             />
-          </FormGroup>
+          </CommonFormGroup>
         </form>
-        <Card
+        <CommonCard
           v-if="
             session.sessionType === SESSION_TYPES.EXTENSION ||
             session.sessionType === SESSION_TYPES.KEPLR ||
@@ -81,21 +81,21 @@
           <div slot="subtitle">
             {{ getExternalSessionMessage(session.sessionType) }}
           </div>
-        </Card>
+        </CommonCard>
       </div>
       <div v-else-if="step === inclusionStep" class="action-modal-form">
-        <Card icon="hourglass_empty" :spin="true">
+        <CommonCard icon="hourglass_empty" :spin="true">
           <div slot="title">Sent and confirming</div>
           <div slot="subtitle">
             Waiting for confirmation from {{ network.name }}.
           </div>
-        </Card>
+        </CommonCard>
       </div>
       <div
         v-else-if="step === successStep"
         class="action-modal-form success-step"
       >
-        <Card icon="check" icon-color="var(--success)" :success="true">
+        <CommonCard icon="check" icon-color="var(--success)" :success="true">
           <div slot="title">{{ notifyMessage.title }}</div>
           <div slot="subtitle">
             {{ notifyMessage.body }}
@@ -103,28 +103,28 @@
             <br />
             <router-link to="/transactions">See your transaction</router-link>
           </div>
-        </Card>
+        </CommonCard>
       </div>
-      <Card
+      <CommonCard
         v-if="submissionError"
         class="form-msg sm form-msg--error submission-error"
       >
         <div slot="title">{{ submissionErrorPrefix }}</div>
         <div slot="subtitle">{{ submissionError }}</div>
-      </Card>
+      </CommonCard>
       <div class="action-modal-footer">
         <slot name="action-modal-footer">
           <div
             v-if="[defaultStep, feeStep, signStep].includes(step)"
             class="action-modal-group"
           >
-            <Button
+            <CommonButton
               id="closeBtn"
               value="Cancel"
               type="secondary"
               @click.native="close"
             />
-            <Button
+            <CommonButton
               v-if="requiresSignIn"
               v-focus
               value="Sign In"
@@ -132,13 +132,13 @@
               @click.native="goToSession"
               @click.enter.native="goToSession"
             />
-            <Button
+            <CommonButton
               v-else-if="sending"
               value="Sending..."
               disabled="disabled"
               type="primary"
             />
-            <Button
+            <CommonButton
               v-else-if="step !== signStep"
               ref="next"
               type="primary"
@@ -147,7 +147,7 @@
               :disabled="disabled || !balancesLoaded"
               @click.native="validateChangeStep"
             />
-            <Button
+            <CommonButton
               v-else
               type="primary"
               value="Send"
@@ -184,7 +184,7 @@ const SESSION_TYPES = {
 }
 
 export default {
-  name: `ActionModal`,
+  name: `ModalAction`,
   filters: {
     prettyInt,
   },
@@ -360,7 +360,7 @@ export default {
     async validateChangeStep() {
       if (this.disabled) return
 
-      // An ActionModal is only the prototype of a parent modal
+      // An ModalAction is only the prototype of a parent modal
       switch (this.step) {
         case defaultStep:
           if (!this.isValidChildForm) {

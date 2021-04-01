@@ -1,13 +1,13 @@
 <template>
   <div class="seed-phrase">
-    <Warning>
+    <CommonWarning>
       <h2 slot="title">🚨 Warning</h2>
       <p slot="message">
         This seed phrase is all that is needed to access your account. Make sure
         to store it in a safe place. If lost or stored incorrectly, this seed
         cannot be recovered.
       </p>
-    </Warning>
+    </CommonWarning>
     <table class="seed-table">
       <tr>
         <td v-for="(word, index) in splitSeed.slice(0, 6)" :key="index">

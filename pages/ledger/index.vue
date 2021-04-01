@@ -44,13 +44,13 @@
         </i>
       </div>
     </div>
-    <Card v-if="!isChromiumBrowser">
+    <CommonCard v-if="!isChromiumBrowser">
       <h2 slot="title">Please use Chrome or Brave.</h2>
       <p slot="subtitle">Ledger is not supported in this browser.</p>
-    </Card>
+    </CommonCard>
 
     <div class="session-main">
-      <Button
+      <CommonButton
         value="Connect Ledger"
         :loading="loading"
         @click.native="connect"

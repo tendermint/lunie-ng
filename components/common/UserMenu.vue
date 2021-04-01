@@ -3,14 +3,14 @@
     <div v-if="session" class="user-menu">
       <div>
         <h4>Your Address</h4>
-        <UserMenuAddress :address="session.address" />
+        <CommonUserMenuAddress :address="session.address" />
       </div>
       <i class="material-icons icon-button" @click="$router.push('/welcome')">
         person
       </i>
     </div>
     <template v-else>
-      <Button
+      <CommonButton
         value="Get Started"
         class="menu-button"
         type="secondary"
@@ -24,7 +24,7 @@
 import { mapState } from 'vuex'
 
 export default {
-  name: `UserMenu`,
+  name: `CommonUserMenu`,
   computed: {
     ...mapState(['session']),
   },

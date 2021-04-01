@@ -4,7 +4,7 @@
       <h2 class="session-title">Lunie Browser Extension</h2>
 
       <div v-if="!filteredAccounts.length && !initialized" class="session-main">
-        <Button
+        <CommonButton
           value="Connect Lunie Extension"
           :loading="loading"
           @click.native="connect"
@@ -27,7 +27,7 @@
           Below is a list of accounts we've received from the Lunie browser
           extension.
         </p>
-        <AccountList
+        <AddressAccountList
           :accounts="filteredAccounts"
           :button-action="signInAndRedirect"
           :button-text="`Use Account`"

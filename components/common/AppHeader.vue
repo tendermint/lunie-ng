@@ -23,7 +23,7 @@
           </template>
         </div>
       </div>
-      <AppMenu v-if="isOpen || desktop" @close="close" />
+      <CommonAppMenu v-if="isOpen || desktop" @close="close" />
     </div>
   </nav>
 </template>

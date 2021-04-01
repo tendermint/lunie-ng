@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import BigNumber from 'bignumber.js'
 import { reverse, sortBy, uniq, uniqWith } from 'lodash'
 import { encodeB32, decodeB32 } from '~/common/address'
@@ -5,40 +7,8 @@ import { getProposalSummary } from '~/common/common-reducers'
 import { lunieMessageTypes } from '~/common/lunie-message-types'
 import network from '~/common/network'
 
-function proposalBeginTime(proposal) {
-  const status = getProposalStatus(proposal)
-  switch (status) {
-    case 'DepositPeriod':
-      return proposal.submit_time
-    case 'VotingPeriod':
-      return proposal.voting_start_time
-    case 'Passed':
-    case 'Rejected':
-      return proposal.voting_end_time
-  }
-}
-
-function proposalEndTime(proposal) {
-  const status = getProposalStatus(proposal)
-  switch (status) {
-    case 'DepositPeriod':
-      return proposal.deposit_end_time
-    case 'VotingPeriod':
-    // the end time lives in the past already if the proposal is finalized
-    // eslint-disable-next-line no-fallthrough
-    case 'Passed':
-    case 'Rejected':
-      return proposal.voting_end_time
-  }
-}
-
-function proposalFinalized(proposal) {
-  return ['Passed', 'Rejected'].includes(getProposalStatus(proposal))
-}
-
 export function getStakingCoinViewAmount(chainStakeAmount) {
   const coinLookup = network.getCoinLookup(network.stakingDenom, 'viewDenom')
-
   return coinReducer({
     amount: chainStakeAmount,
     denom: coinLookup.chainDenom,
@@ -73,42 +43,14 @@ export function coinReducer(chainCoin, ibcInfo) {
   }
 }
 
-/* if you don't get this, write fabian@lunie.io */
-// expected rewards if delegator stakes x tokens
-export const expectedRewardsPerToken = (
-  validator,
-  commission,
-  annualProvision
-) => {
-  if (validator.status === 'INACTIVE' || validator.jailed === true) {
-    return 0
-  }
-
-  // share of all provisioned block rewards all delegators of this validator get
-  const totalAnnualValidatorRewards = BigNumber(validator.votingPower).times(
-    annualProvision
-  )
-  // the validator takes a cut in amount of the commission
-  const totalAnnualDelegatorRewards = totalAnnualValidatorRewards.times(
-    BigNumber(1).minus(commission)
-  )
-
-  // validator.tokens is the amount of all tokens delegated to that validator
-  // one token delegated would receive x percentage of all delegator rewards
-  const delegatorSharePerToken = BigNumber(1).div(validator.tokens)
-  const annualDelegatorRewardsPerToken = totalAnnualDelegatorRewards.times(
-    delegatorSharePerToken
-  )
-  return annualDelegatorRewardsPerToken
-}
-
 // reduce deposits to one number
 // ATTENTION doesn't consider multi denom deposits
 function getDeposit(proposal) {
+
   const sum = proposal.total_deposit
     .filter(({ denom }) => denom === network.stakingDenom)
-    .reduce((sum, cur) => sum.plus(cur.amount), BigNumber(0))
-  return getStakingCoinViewAmount(sum)
+  let s = sum.reduce((ss, cur) => { return ss.plus(cur.amount) }, BigNumber(0))
+  return getStakingCoinViewAmount(s)
 }
 
 function getTotalVotePercentage(proposal, totalBondedTokens, totalVoted) {
@@ -498,47 +440,57 @@ export function claimRewardsMessagesAggregator(claimMessages) {
   }
 }
 
-function getProposalStatus(proposal) {
-  return {
-    1: 'DepositPeriod',
-    2: 'VotingPeriod',
-    3: 'Passed',
-    4: 'Rejected',
-    5: 'Failed',
-  }[proposal.status]
+function proposalBeginTime(proposal) {
+  switch (proposal.status) {
+    case 'PROPOSAL_STATUS_DEPOSIT_PERIOD':
+      return proposal.submit_time
+    case 'PROPOSAL_STATUS_VOTING_PERIOD':
+      return proposal.voting_start_time
+    case 'PROPOSAL_STATUS_PASSED':
+    case 'PROPOSAL_STATUS_REJECTED':
+      return proposal.voting_end_time
+  }
+}
+
+function proposalEndTime(proposal) {
+  switch (proposal.status) {
+    case 'PROPOSAL_STATUS_DEPOSIT_PERIOD':
+      return proposal.deposit_end_time
+    case 'PROPOSAL_STATUS_VOTING_PERIOD':
+    // the end time lives in the past already if the proposal is finalized
+    // eslint-disable-next-line no-fallthrough
+    case 'PROPOSAL_STATUS_PASSED':
+    case 'PROPOSAL_STATUS_REJECTED':
+      return proposal.voting_end_time
+  }
+}
+
+function proposalFinalized(proposal) {
+  return ['PROPOSAL_STATUS_PASSED', 'PROPOSAL_STATUS_REJECTED'].includes(
+    proposal.status
+  )
 }
 
 export function proposalReducer(
   proposal,
-  tally,
-  proposer,
   totalBondedTokens,
-  detailedVotes,
-  validators
+  detailedVotes
 ) {
+
   return {
-    id: Number(proposal.id),
-    proposalId: String(proposal.id),
-    type: proposalTypeEnumDictionary[proposal.content.type.split('/')[1]],
-    title: proposal.content.value.title,
-    description: proposal.content.value.changes
-      ? `Parameter: ${JSON.stringify(
-          proposal.content.value.changes,
-          null,
-          4
-        )}\nDescription: `
-      : `` + proposal.content.value.description,
+    id: Number(proposal.proposal_id),
+    proposalId: String(proposal.proposal_id),
+    type: proposalTypeEnumDictionary[proposal.content["@type"].split('/')[1]],
+    title: proposal.content.title,
+    description: proposal.content.description,
     creationTime: proposal.submit_time,
-    status: getProposalStatus(proposal),
+    status: proposal.status,
     statusBeginTime: proposalBeginTime(proposal),
     statusEndTime: proposalEndTime(proposal),
-    tally: tallyReducer(proposal, tally, totalBondedTokens),
+    tally: tallyReducer(proposal, detailedVotes.tally, totalBondedTokens),
     deposit: getDeposit(proposal),
-    proposer: proposer
-      ? networkAccountReducer(proposer.proposer, validators)
-      : undefined,
     summary: getProposalSummary(
-      proposalTypeEnumDictionary[proposal.content.type.split('/')[1]]
+      proposalTypeEnumDictionary[proposal.content["@type"].split('/')[1]]
     ),
     detailedVotes,
   }
@@ -640,7 +592,7 @@ export function transactionsReducer(txs) {
 }
 
 export function delegationReducer(delegation, validator, active) {
-  const coinLookup = network.getCoinLookup(network, delegation.balance.denom)
+  const coinLookup = network.getCoinLookup(network.stakingDenom, delegation.balance.denom)
   const { amount, denom } = coinReducer(delegation.balance, coinLookup)
 
   return {
@@ -653,7 +605,7 @@ export function delegationReducer(delegation, validator, active) {
   }
 }
 
-export function getValidatorUptimePercentage(validator, signedBlocksWindow) {
+export function getValidatorUptimePercentage(validator, signedBlocksWindow) {// temp
   if (
     validator.signing_info &&
     validator.signing_info.missed_blocks_counter &&
@@ -662,18 +614,14 @@ export function getValidatorUptimePercentage(validator, signedBlocksWindow) {
     return (
       1 -
       Number(validator.signing_info.missed_blocks_counter) /
-        Number(signedBlocksWindow)
+      Number(signedBlocksWindow)
     )
   } else {
     return 1
   }
 }
 
-export function validatorReducer(
-  signedBlocksWindow,
-  validator,
-  annualProvision
-) {
+export function validatorReducer(validator, annualProvision, supply, pool) {
   const statusInfo = getValidatorStatus(validator)
   let websiteURL = validator.description.website
   if (!websiteURL || websiteURL === '[do-not-modify]') {
@@ -681,6 +629,11 @@ export function validatorReducer(
   } else if (!websiteURL.match(/http[s]?/)) {
     websiteURL = `https://` + websiteURL
   }
+
+  const pctCommission = new BigNumber(1 - validator.commission.commission_rates.rate)
+  const provision = new BigNumber(annualProvision)
+  const bonded = new BigNumber(pool.pool.bonded_tokens)
+  const expectedRewards = pctCommission.times(provision.div(bonded))
 
   return {
     id: validator.operator_address,
@@ -691,14 +644,15 @@ export function validatorReducer(
     website: websiteURL,
     identity: validator.description.identity,
     name: validator.description.moniker,
-    votingPower: validator.votingPower.toFixed(6),
+    votingPower: (validator.tokens / supply).toFixed(6),
     startHeight: validator.signing_info
       ? validator.signing_info.start_height
       : undefined,
-    uptimePercentage: getValidatorUptimePercentage(
-      validator,
-      signedBlocksWindow
-    ),
+    uptimePercentage: 1,
+    // getValidatorUptimePercentage(
+    //   validator,
+    //   signedBlocksWindow
+    // ),
     tokens: getStakingCoinViewAmount(validator.tokens),
     commissionUpdateTime: validator.commission.update_time,
     commission: Number(validator.commission.commission_rates.rate).toFixed(6),
@@ -707,11 +661,7 @@ export function validatorReducer(
     status: statusInfo.status,
     statusDetailed: statusInfo.status_detailed,
     expectedReturns: annualProvision
-      ? expectedRewardsPerToken(
-          validator,
-          validator.commission.commission_rates.rate,
-          annualProvision
-        ).toFixed(6)
+      ? expectedRewards
       : undefined,
   }
 }

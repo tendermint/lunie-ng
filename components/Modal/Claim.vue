@@ -1,7 +1,7 @@
 <template>
-  <ActionModal
+  <ModalAction
     id="modal-withdraw-rewards"
-    ref="actionModal"
+    ref="ModalAction"
     :transaction-data="transactionData"
     :notify-message="notifyMessage"
     :selected-denom="feeDenom"
@@ -20,20 +20,20 @@
       Lunie will only withdraw rewards from 5 validators at a time because of a
       limitation with the Ledger&nbsp;Nano.
     </span>
-    <FormGroup
+    <CommonFormGroup
       class="action-modal-form-group"
       field-id="amount"
       field-title="Amount"
     >
       <div v-for="reward in totalRewards" :key="reward.denom" class="row">
-        <Field
+        <CommonField
           :value="reward.amount | fullDecimals"
           :add-on="reward.denom"
           :is-disabled="true"
         />
       </div>
-    </FormGroup>
-  </ActionModal>
+    </CommonFormGroup>
+  </ModalAction>
 </template>
 
 <script>
@@ -148,7 +148,7 @@ export default {
   },
   methods: {
     open() {
-      this.$refs.actionModal.open()
+      this.$refs.ModalAction.open()
     },
   },
 }

@@ -1,19 +1,19 @@
 <template>
-  <Form :submit="onSubmit">
+  <CommonForm :submit="onSubmit">
     <h2 class="session-title">Choose name</h2>
     <div class="session-main bottom-indent">
-      <FormGroup field-id="import-name" field-label="Address">
+      <CommonFormGroup field-id="import-name" field-label="Address">
         <p class="address">
           {{ address }}
         </p>
-      </FormGroup>
+      </CommonFormGroup>
 
-      <FormGroup
+      <CommonFormGroup
         :error="$v.$error && $v.fieldName.$invalid"
         field-id="import-name"
         field-label="Account Name"
       >
-        <Field
+        <CommonField
           id="import-name"
           v-model.trim="fieldName"
           v-focus
@@ -37,12 +37,12 @@
           type="custom"
           msg="already exists"
         />
-      </FormGroup>
+      </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <Button value="Next" type="submit" />
+      <CommonButton value="Next" type="submit" />
     </div>
-  </Form>
+  </CommonForm>
 </template>
 
 <script>

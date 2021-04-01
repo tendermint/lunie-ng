@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormGroup
+    <CommonFormGroup
       v-if="getDenoms.length > 1"
       id="form-group-amount"
       class="action-modal-form-group"
@@ -8,7 +8,7 @@
       field-label="Select Fee"
     >
       <div class="row">
-        <Field
+        <CommonField
           id="amount"
           ref="amount"
           :value="selectedFee.amount"
@@ -17,7 +17,7 @@
           type="number"
           @keyup.enter.native="enterPressed"
         />
-        <Field
+        <CommonField
           id="token"
           v-model="feeDenom"
           :title="`Select the token you wish to use`"
@@ -26,7 +26,7 @@
           type="select"
         />
       </div>
-    </FormGroup>
+    </CommonFormGroup>
     <ul class="table-invoice">
       <li
         v-for="(subTotal, index) in amounts"

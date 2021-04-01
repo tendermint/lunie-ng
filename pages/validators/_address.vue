@@ -1,9 +1,9 @@
 <template>
   <div>
     <div v-if="!validatorsLoaded">
-      <Loader />
+      <CommonLoader />
     </div>
-    <Card
+    <CommonCard
       v-else-if="validators.length && !validator"
       title="Validator Not Found"
       subtitle="Please try again."
@@ -11,11 +11,11 @@
 
     <div v-else class="validator-container">
       <div class="status-container">
-        <Status :label="validator.status" />
+        <CommonStatus :label="validator.status" />
       </div>
       <div class="validator-header">
         <div class="identity">
-          <Avatar
+          <CommonAvatar
             class="image"
             alt="validator logo"
             :address="validator.operatorAddress"
@@ -31,8 +31,8 @@
           </div>
         </div>
         <div class="action-buttons">
-          <Button :value="`Stake`" @click.native="openStakeModal" />
-          <Button
+          <CommonButton :value="`Stake`" @click.native="openStakeModal" />
+          <CommonButton
             :disabled="!delegation"
             :value="`Unstake`"
             type="secondary"
@@ -63,7 +63,7 @@
         <div>
           <h4>Validator Address</h4>
           <span>
-            <Address :address="validator.operatorAddress" />
+            <CommonAddress :address="validator.operatorAddress" />
           </span>
         </div>
       </section>
@@ -131,8 +131,8 @@
         </div>
       </section>
     </div>
-    <LazyStakeModal ref="StakeModal" :target-validator="validator" />
-    <LazyUnstakeModal
+    <LazyModalStake ref="StakeModal" :target-validator="validator" />
+    <LazyModalUnstake
       ref="UnstakeModal"
       :source-validator="validator"
       :is-unnomination="true"

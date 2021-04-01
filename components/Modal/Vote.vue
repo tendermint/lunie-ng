@@ -1,7 +1,7 @@
 <template>
-  <ActionModal
+  <ModalAction
     id="modal-vote"
-    ref="actionModal"
+    ref="ModalAction"
     :validate="validateForm"
     title="Vote"
     class="modal-vote"
@@ -15,7 +15,7 @@
   >
     <div class="action-modal-group vote-options">
       <div>
-        <Button
+        <CommonButton
           id="vote-yes"
           :disabled="lastVoteOption === `Yes`"
           :type="vote === `Yes` ? 'active' : 'secondary'"
@@ -23,7 +23,7 @@
           size="md"
           @click.native="vote = 'Yes'"
         />
-        <Button
+        <CommonButton
           id="vote-veto"
           :disabled="lastVoteOption === `NoWithVeto`"
           :type="vote === `NoWithVeto` ? 'active' : 'secondary'"
@@ -33,7 +33,7 @@
         />
       </div>
       <div>
-        <Button
+        <CommonButton
           id="vote-no"
           :disabled="lastVoteOption === `No`"
           :type="vote === `No` ? 'active' : 'secondary'"
@@ -41,7 +41,7 @@
           size="md"
           @click.native="vote = 'No'"
         />
-        <Button
+        <CommonButton
           id="vote-abstain"
           :disabled="lastVoteOption === `Abstain`"
           :type="vote === `Abstain` ? 'active' : 'secondary'"
@@ -51,12 +51,12 @@
         />
       </div>
     </div>
-    <FormMessage
+    <CommonFormMessage
       v-if="$v.vote.$error && !$v.vote.required"
       name="Vote"
       type="required"
     />
-  </ActionModal>
+  </ModalAction>
 </template>
 
 <script>
@@ -114,7 +114,7 @@ export default {
   },
   methods: {
     open() {
-      this.$refs.actionModal.open()
+      this.$refs.ModalAction.open()
     },
     validateForm() {
       this.$v.$touch()

@@ -1,26 +1,26 @@
 <template>
-  <Form :submit="onSubmit">
+  <CommonForm :submit="onSubmit">
     <h2 class="session-title bottom-indent">Explore with any address</h2>
     <div class="session-main">
-      <FormGroup field-label="Your Address">
-        <Field v-model.trim="address" type="text" />
-        <FormMessage
+      <CommonFormGroup field-label="Your Address">
+        <CommonField v-model.trim="address" type="text" />
+        <CommonFormMessage
           v-if="$v.address.$error && !$v.address.required"
           name="Address"
           type="required"
         />
-        <FormMessage
+        <CommonFormMessage
           v-else-if="$v.address.$error && !$v.address.addressValidate"
           type="custom"
           :msg="addressError"
         />
-        <FormMessage v-if="error" :name="error" type="custom" />
-      </FormGroup>
+        <CommonFormMessage v-if="error" :name="error" type="custom" />
+      </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <Button value="Explore" />
+      <CommonButton value="Explore" />
     </div>
-  </Form>
+  </CommonForm>
 </template>
 
 <script>

@@ -1,8 +1,8 @@
 <template>
   <div class="portfolio">
-    <Balances />
-    <Delegations />
-    <Undelegations />
+    <PortfolioBalances />
+    <PortfolioDelegations />
+    <PortfolioUndelegations />
   </div>
 </template>
 

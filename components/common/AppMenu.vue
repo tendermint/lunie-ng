@@ -1,7 +1,7 @@
 <template>
   <menu class="app-menu">
     <div>
-      <UserMenu />
+      <CommonUserMenu />
       <nuxt-link
         class="app-menu-item"
         to="/"
@@ -46,14 +46,14 @@
       </nuxt-link>
     </div>
     <div>
-      <ConnectedNetwork @close-menu="handleClick" />
+      <CommonConnectedNetwork @close-menu="handleClick" />
     </div>
   </menu>
 </template>
 
 <script>
 export default {
-  name: `AppMenu`,
+  name: `CommonAppMenu`,
   methods: {
     handleClick() {
       this.$emit(`close`)
@@ -65,7 +65,7 @@ export default {
 
 <style scoped>
 .app-menu {
-  z-index: var(--z-appMenu);
+  z-index: var(--z-CommonAppMenu);
   display: flex;
   flex-flow: column;
   position: relative;

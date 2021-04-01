@@ -1,7 +1,7 @@
 <template>
   <div class="table-container">
     <h1>Your Stake</h1>
-    <TableValidators
+    <StakingTableValidators
       :validators="delegations.map(({ validator }) => validator)"
       :delegations="delegations"
       :rewards="rewards"
@@ -18,7 +18,7 @@
           </p>
         </div>
       </template>
-    </TableValidators>
+    </StakingTableValidators>
     <!-- <UnstakeModal ref="UnstakeModal" /> -->
   </div>
 </template>

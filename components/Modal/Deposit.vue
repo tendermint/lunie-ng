@@ -1,7 +1,7 @@
 <template>
-  <ActionModal
+  <ModalAction
     id="modal-deposit"
-    ref="actionModal"
+    ref="ModalAction"
     :validate="validateForm"
     :amount="amount"
     title="Deposit"
@@ -14,13 +14,13 @@
     @close="clear"
     @txIncluded="onSuccess"
   >
-    <FormGroup
+    <CommonFormGroup
       :error="$v.amount.$error && $v.amount.$invalid"
       class="action-modal-form-group"
       field-id="amount"
       field-label="Amount"
     >
-      <Field
+      <CommonField
         id="amount"
         v-model="amount"
         v-focus
@@ -60,8 +60,8 @@
         name="Amount"
         type="maxDecimals"
       />
-    </FormGroup>
-  </ActionModal>
+    </CommonFormGroup>
+  </ModalAction>
 </template>
 
 <script>
@@ -145,7 +145,7 @@ export default {
       if (this.network.network_type === `polkadot`) {
         this.amount = this.deposits[0].amount[0].amount
       }
-      this.$refs.actionModal.open()
+      this.$refs.ModalAction.open()
     },
     validateForm() {
       this.$v.$touch()

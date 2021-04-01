@@ -4,20 +4,20 @@
     class="table-container"
   >
     <h1>Unstaking</h1>
-    <TableContainer
+    <CommonTableContainer
       :length="undelegations.length"
       :columns="properties"
       :sort="sort"
       :loaded="undelegationsLoaded"
     >
-      <ValidatorRow
+      <StakingValidatorRow
         v-for="(undelegation, index) in undelegations"
         :key="undelegation.validatorAddress + undelegation.startHeight"
         :index="index"
         :validator="undelegation.validator"
         :undelegation="undelegation"
       />
-    </TableContainer>
+    </CommonTableContainer>
     <!-- <ModalWithdrawUnstaked ref="WithdrawModal" /> -->
   </div>
 </template>

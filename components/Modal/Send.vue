@@ -1,7 +1,7 @@
 <template>
-  <ActionModal
+  <ModalAction
     id="send-modal"
-    ref="actionModal"
+    ref="ModalAction"
     :validate="validateForm"
     :amounts="amounts"
     title="Send"
@@ -13,13 +13,13 @@
     @close="clear"
     @txIncluded="onSuccess"
   >
-    <FormGroup
+    <CommonFormGroup
       :error="$v.address.$error && $v.address.$invalid"
       class="action-modal-form-group"
       field-id="send-address"
       field-label="Send To"
     >
-      <Field
+      <CommonField
         id="send-address"
         ref="sendAddress"
         v-model="address"
@@ -40,8 +40,8 @@
         type="custom"
         :msg="addressError"
       />
-    </FormGroup>
-    <FormGroup
+    </CommonFormGroup>
+    <CommonFormGroup
       v-for="(amount, index) in amounts"
       id="form-group-amount"
       :key="amount.denom"
@@ -51,14 +51,14 @@
       :field-label="index === 0 ? `Amount` : ``"
     >
       <div class="row">
-        <Field
+        <CommonField
           v-model="amount.amount"
           class="amount"
           placeholder="0"
           type="number"
           @keyup.enter.native="enterPressed"
         />
-        <Field
+        <CommonField
           v-model="amount.denom"
           :title="`Select the token you wish to use`"
           :options="denomOptions | availableDenoms(index, amounts)"
@@ -126,15 +126,15 @@
           <i class="material-icons notranslate">add_circle</i>
         </div>
       </div>
-    </FormGroup>
-    <FormGroup
+    </CommonFormGroup>
+    <CommonFormGroup
       id="memo"
       :error="$v.memo.$error && $v.memo.$invalid"
       class="action-modal-group"
       field-id="memo"
       field-label="Memo"
     >
-      <Field
+      <CommonField
         id="memo"
         v-model="memo"
         type="text"
@@ -146,8 +146,8 @@
         type="maxLength"
         :max="max_memo_characters"
       />
-    </FormGroup>
-  </ActionModal>
+    </CommonFormGroup>
+  </ModalAction>
 </template>
 
 <script>
@@ -228,7 +228,7 @@ export default {
     open(denom = undefined) {
       this.amounts = [{ amount: '', denom: denom || this.denoms[0] }]
       this.$v.$reset()
-      this.$refs.actionModal.open()
+      this.$refs.ModalAction.open()
     },
     onSuccess(event) {
       this.$emit(`success`, event)
@@ -286,7 +286,7 @@ export default {
       }
     },
     enterPressed() {
-      this.$refs.actionModal.validateChangeStep()
+      this.$refs.ModalAction.validateChangeStep()
     },
     trimSendAddress() {
       this.address = this.$refs.sendAddress.value.trim()

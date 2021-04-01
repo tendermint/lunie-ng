@@ -3,27 +3,35 @@
     <h1>Welcome 👋</h1>
     <h2>{{ network.description }}</h2>
     <div class="session-list">
-      <LiSession
+      <AddressLiSession
         icon="language"
         title="Explore with any address"
         route="/explore"
       />
-      <LiSession
+      <AddressLiSession
         v-if="initialized"
         icon="web"
         title="Lunie Browser Extension"
         route="/extension"
       />
-      <LiSession icon="web" title="Keplr Browser Extension" route="/keplr" />
-      <LiSession icon="usb" title="Ledger Nano" route="/ledger" />
+      <AddressLiSession
+        icon="web"
+        title="Keplr Browser Extension"
+        route="/keplr"
+      />
+      <AddressLiSession icon="usb" title="Ledger Nano" route="/ledger" />
       <template v-if="network.localSigning">
-        <LiSession icon="person" title="Use existing address" route="/signin" />
-        <LiSession
+        <AddressLiSession
+          icon="person"
+          title="Use existing address"
+          route="/signin"
+        />
+        <AddressLiSession
           icon="person_add"
           title="Create new address"
           route="/create"
         />
-        <LiSession
+        <AddressLiSession
           id="recover-with-backup"
           icon="settings_backup_restore"
           title="Recover from seed"
