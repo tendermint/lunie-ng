@@ -1,5 +1,5 @@
 <template>
-  <Form :submit="onSubmit">
+  <CommonForm :submit="onSubmit">
     <h2 class="session-title">Choose a password</h2>
     <div>
       <CommonFormGroup
@@ -14,12 +14,12 @@
           type="password"
           placeholder="Must be at least 10 characters"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldPassword.$error && !$v.fieldPassword.required"
           name="Password"
           type="required"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldPassword.$error && !$v.fieldPassword.minLength"
           name="Password"
           type="minLength"
@@ -37,7 +37,7 @@
           type="password"
           placeholder="Enter password again"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="
             $v.fieldPasswordConfirm.$error &&
             !$v.fieldPasswordConfirm.sameAsPassword
@@ -47,10 +47,15 @@
         />
       </CommonFormGroup>
       <div class="session-footer">
-        <CommonButton value="Next" type="submit" />
+        <CommonButton
+          value="Next"
+          type="submit"
+          :disabled="loading"
+          :loading="loading"
+        />
       </div>
     </div>
-  </Form>
+  </CommonForm>
 </template>
 
 <script>
@@ -67,6 +72,7 @@ export default {
   data: () => ({
     fieldPassword: undefined,
     fieldPasswordConfirm: undefined,
+    loading: false,
   }),
   mounted() {
     this.fieldPassword = this.password
@@ -75,6 +81,7 @@ export default {
     onSubmit() {
       this.$v.$touch()
       if (this.$v.$error) return
+      this.loading = true
       this.$emit('submit', this.fieldPassword)
     },
   },

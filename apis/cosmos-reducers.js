@@ -255,24 +255,23 @@ const proposalTypeEnumDictionary = {
 
 // map Cosmos SDK message types to Lunie message types
 export function getMessageType(type) {
-  // different networks use different prefixes for the transaction types like cosmos/MsgSend vs core/MsgSend in Terra
   const transactionTypeSuffix = type.split('/')[1]
   switch (transactionTypeSuffix) {
-    case 'MsgSend':
+    case 'cosmos.bank.v1beta1.MsgSend':
       return lunieMessageTypes.SEND
-    case 'MsgDelegate':
+    case 'cosmos.staking.v1beta1.MsgDelegate':
       return lunieMessageTypes.STAKE
-    case 'MsgBeginRedelegate':
+    case 'cosmos.staking.v1beta1.MsgBeginRedelegate':
       return lunieMessageTypes.RESTAKE
-    case 'MsgUndelegate':
+    case 'cosmos.staking.v1beta1.MsgUndelegate':
       return lunieMessageTypes.UNSTAKE
-    case 'MsgWithdrawDelegationReward':
+    case 'cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward':
       return lunieMessageTypes.CLAIM_REWARDS
-    case 'MsgSubmitProposal':
+    case 'cosmos.gov.v1beta1.MsgSubmitProposal':
       return lunieMessageTypes.SUBMIT_PROPOSAL
-    case 'MsgVote':
+    case 'cosmos.gov.v1beta1.MsgVote':
       return lunieMessageTypes.VOTE
-    case 'MsgDeposit':
+    case 'cosmos.gov.v1beta1.MsgDeposit':
       return lunieMessageTypes.DEPOSIT
     default:
       return lunieMessageTypes.UNKNOWN
@@ -319,34 +318,35 @@ export function unstakeDetailsReducer(message) {
 
 export function claimRewardsDetailsReducer(message, transaction) {
   return {
-    from: message.validators,
+    from: message.value.validators,
     amounts: claimRewardsAmountReducer(transaction),
   }
 }
 
 export function claimRewardsAmountReducer(transaction) {
-  const transactionClaimEvents =
-    transaction.events &&
-    transaction.events.filter((event) => event.type === `transfer`)
-  if (!transactionClaimEvents) {
-    return [{ denom: '', amount: 0 }]
-  }
-  // filter out unsuccessful messages
-  if (transaction.logs) {
-    transaction.logs.forEach((log, index) => {
-      if (log.success !== true) {
-        transactionClaimEvents.splice(index, 1)
+  const transactionClaimEvents = []
+
+  transaction.logs.forEach((log) => {
+    log.events.forEach((event) => {
+      if (event.type === `transfer`) {
+        transactionClaimEvents.push(event)
       }
     })
-  }
-  // if transactionClaimEvents is empty after the successful transaction check, we default it
+  })
+
   if (transactionClaimEvents.length === 0) {
     return [{ denom: '', amount: 0 }]
   }
-  const amountAttributes = transactionClaimEvents
-    .map((tx) => tx.attributes)
-    .find((attributes) => attributes.length > 0)
-    .filter((attribute) => attribute.key === `amount`)
+
+  const amountAttributes = []
+  transactionClaimEvents.forEach((event) => {
+    event.attributes.forEach((attribute) => {
+      if (attribute.key === `amount`) {
+        amountAttributes.push(attribute)
+      }
+    })
+  })
+
   const allClaimedRewards = amountAttributes
     .map((amount) => amount.value)
     .map((rewardValue) => rewardCoinReducer(rewardValue))
@@ -430,10 +430,10 @@ export function transactionDetailsReducer(type, message, transaction) {
 export function claimRewardsMessagesAggregator(claimMessages) {
   // reduce all withdraw messages to one one collecting the validators from all the messages
   const onlyValidatorsAddressesArray = claimMessages.map(
-    (msg) => msg.value.validator_address
+    (msg) => msg.validator_address
   )
   return {
-    type: `xxx/MsgWithdrawDelegationReward`, // prefix omited as not important
+    '@type': `/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward`, // prefix omited as not important
     value: {
       validators: onlyValidatorsAddressesArray,
     },
@@ -528,7 +528,7 @@ export function transactionReducer(transaction) {
     } = transaction.tx.body.messages.reduce(
       ({ claimMessages, otherMessages }, message) => {
         // we need to aggregate all withdraws as we display them together in one transaction
-        if (getMessageType(message.type) === lunieMessageTypes.CLAIM_REWARDS) {
+        if (getMessageType(message['@type']) === lunieMessageTypes.CLAIM_REWARDS) {
           claimMessages.push(message)
         } else {
           otherMessages.push(message)
@@ -547,15 +547,15 @@ export function transactionReducer(transaction) {
       ? otherMessages.concat(claimMessage) // add aggregated claim message
       : otherMessages
     const returnedMessages = allMessages.map(
-      ({ value: message, type }, messageIndex) => ({
+      (message, messageIndex) => ({
         id: transaction.txhash,
-        type: getMessageType(type),
+        type: getMessageType(message['@type']),
         hash: transaction.txhash,
         networkId: network.id,
         key: `${transaction.txhash}_${messageIndex}`,
         height: transaction.height,
         details: transactionDetailsReducer(
-          getMessageType(type),
+          getMessageType(message['@type']),
           message,
           transaction
         ),
@@ -570,7 +570,7 @@ export function transactionReducer(transaction) {
           ).events
         ),
         rawMessage: {
-          type,
+          // type,
           message,
         },
       })

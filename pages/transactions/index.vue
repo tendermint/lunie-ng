@@ -12,7 +12,7 @@
     </CommonCard>
 
     <template v-else>
-      <EventList
+      <TransactionsEventList
         :events="transactions"
         :more-available="moreTransactionsAvailable"
         @loadMore="loadTransactions"
@@ -33,12 +33,14 @@
 
 <script>
 import { mapState } from 'vuex'
+import network from '~/network'
 
 export default {
   name: `PageTransactions`,
   middleware: 'addressRequired',
   data: () => ({
-    pageNumber: 0,
+    pageNumber: 1,
+    network,
   }),
   computed: {
     ...mapState('data', [

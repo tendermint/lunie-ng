@@ -7,7 +7,7 @@
         field-id="import-seed"
         field-label="Seed Phrase"
       >
-        <CommonFieldSeed
+        <AddressFieldSeed
           id="import-seed"
           :value="fieldSeed"
           :placeholder="'Must be exactly 12 or 24 words'"
@@ -33,7 +33,12 @@
       </CommonFormGroup>
     </div>
     <div class="session-footer">
-      <CommonButton value="Next" type="submit" />
+      <CommonButton
+        value="Next"
+        type="submit"
+        :disabled="loading"
+        :loading="loading"
+      />
     </div>
   </CommonForm>
 </template>
@@ -69,6 +74,7 @@ export default {
   },
   data: () => ({
     fieldSeed: undefined,
+    loading: false,
   }),
   mounted() {
     this.fieldSeed = this.seed
@@ -77,6 +83,7 @@ export default {
     onSubmit() {
       this.$v.$touch()
       if (this.$v.fieldSeed.$invalid || this.$v.fieldSeed.$invalid) return
+      this.loading = true
       this.$emit('submit', this.fieldSeed)
     },
   },

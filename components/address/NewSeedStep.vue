@@ -1,8 +1,8 @@
 <template>
-  <Form :submit="onSubmit.bind(this)">
+  <CommonForm :submit="onSubmit.bind(this)">
     <h2 class="session-title">Seed Phrase</h2>
     <div class="session-main bottom-indent reorder">
-      <Seed :value="fieldSeed" />
+      <AddressSeed :value="fieldSeed" />
 
       <CommonFormGroup
         :error="$v.fieldWarning.$error"
@@ -26,7 +26,7 @@
             ></label
           >
         </div>
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldWarning.$error && !$v.fieldWarning.required"
           name="Recovery confirmation"
           type="required"
@@ -36,7 +36,7 @@
     <div class="session-footer">
       <CommonButton value="Next" type="submit" />
     </div>
-  </Form>
+  </CommonForm>
 </template>
 
 <script>

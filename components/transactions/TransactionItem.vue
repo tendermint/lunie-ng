@@ -118,7 +118,8 @@ export default {
     },
     imagePath() {
       try {
-        return require(`../../assets/images/transactions/${this.transactionCaption}.svg`)
+        const imgName = this.transactionCaption.replace(/\s+/g, '')
+        return require(`../../assets/images/transactions/${imgName}.svg`)
       } catch {
         return require('../../assets/images/transactions/Unknown.svg')
       }
