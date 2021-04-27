@@ -22,7 +22,7 @@
     }
   },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.23.1",
+    "@cosmjs/launchpad": "^0.24.1",
     "@cosmjs/launchpad-ledger": "^0.23.1",
     "@ledgerhq/hw-transport-webhid": "^5.30.0",
     "@ledgerhq/hw-transport-webusb": "^5.30.0",
