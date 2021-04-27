@@ -3309,11 +3309,9 @@ eslint-ast-utils@^1.1.0:
     lodash.get "^4.4.2"
     lodash.zip "^4.2.0"
 
-eslint-config-prettier@^6.15.0:
-  version "6.15.0"
-  resolved "https://registry.npmjs.org/eslint-config-prettier/-/eslint-config-prettier-6.15.0.tgz"
-  dependencies:
-    get-stdin "^6.0.0"
+eslint-config-prettier@^8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.3.0.tgz#f7471b20b6fe8a9a9254cc684454202886a2dd7a"
 
 eslint-config-standard@^16.0.1:
   version "16.0.1"
@@ -3959,10 +3957,6 @@ get-port-please@^1.0.0:
   resolved "https://registry.npmjs.org/get-port-please/-/get-port-please-1.0.0.tgz"
   dependencies:
     fs-memo "^1.0.0"
-
-get-stdin@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.npmjs.org/get-stdin/-/get-stdin-6.0.0.tgz"
 
 get-stdin@^8.0.0:
   version "8.0.0"
