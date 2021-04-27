@@ -1,19 +1,28 @@
 <template>
   <div>
+    <div class="session-back">
+      <a @click="onBack">
+        <i class="material-icons notranslate circle back">arrow_back</i>
+      </a>
+    </div>
     <CommonSteps :steps="steps" :active-step="step" />
-    <ImportSeedStep v-if="step === 'Recover'" :seed="seed" @submit="setSeed" />
-    <ImportNameStep
+    <AddressImportSeedStep
+      v-if="step === 'Recover'"
+      :seed="seed"
+      @submit="setSeed"
+    />
+    <AddressImportNameStep
       v-if="step === 'Name'"
       :address="address"
       :name="name"
       @submit="setName"
     />
-    <PasswordStep
+    <AddressPasswordStep
       v-if="step === 'Password'"
       :password="password"
       @submit="setPassword"
     />
-    <FormMessage v-if="errorMessage" type="custom" :msg="errorMessage" />
+    <CommonFormMessage v-if="errorMessage" type="custom" :msg="errorMessage" />
   </div>
 </template>
 
@@ -38,7 +47,7 @@ export default {
   methods: {
     onBack() {
       const stepIndex = this.steps.findIndex((step) => step === this.step)
-      if (stepIndex === 0) this.$router.go(-1)
+      if (stepIndex === 0) return this.$router.go(-1)
       this.errorMessage = undefined
       this.step = this.steps[stepIndex - 1]
     },
@@ -84,7 +93,7 @@ export default {
           sessionType: 'local',
         })
         this.$router.push({
-          name: 'portfolio',
+          name: 'index',
         })
       } catch (error) {
         this.loading = false

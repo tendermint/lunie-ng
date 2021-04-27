@@ -209,7 +209,7 @@ export const actions = {
   },
   async getTransactions(
     { commit, state: { api } },
-    { address, pageNumber = 0 }
+    { address, pageNumber = 1 }
   ) {
     try {
       commit('setTransactionsLoading', true)

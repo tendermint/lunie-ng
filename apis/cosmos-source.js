@@ -96,52 +96,51 @@ export default class CosmosAPI {
     return slashingParams.params.signed_blocks_window
   }
 
-  async getTransactions(address, pageNumber = 0) {
-    // // getting page count
-    // const [senderPage, recipientPage] = await Promise.all([
-    //   this.getPageCount(`/cosmos/tx/v1beta1/txs?message.sender=${address}`),
-    //   this.getPageCount(`/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`),
-    // ])
+  async getTransactions(address, pageNumber = 1) {
+    // getting page count
+    const [senderPage, recipientPage] = await Promise.all([
+      this.getPageCount(`/cosmos/tx/v1beta1/txs?events=message.sender='${address}'`),
+      this.getPageCount(`/cosmos/tx/v1beta1/txs?events=message.action='send'&events=transfer.recipient='${address}'`),
+    ])
 
-    // const requests = [
-    //   this.loadPaginatedTxs(
-    //     `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
-    //     senderPage - pageNumber
-    //   ),
-    //   this.loadPaginatedTxs(
-    //     `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
-    //     recipientPage - pageNumber
-    //   ),
-    // ]
+    const requests = [
+      this.loadPaginatedTxs(
+        `/cosmos/tx/v1beta1/txs?events=message.sender='${address}'`,
+        senderPage - pageNumber + 1
+      ),
+      this.loadPaginatedTxs(
+        `/cosmos/tx/v1beta1/txs?events=message.action='send'&events=transfer.recipient='${address}'`,
+        recipientPage - pageNumber + 1
+      ),
+    ]
     // /*
     //   if it's a first requests we need to load two pages, instead of one,
     //   cause last page could contain less records than any other (even 1)
     //   To do this asynchronously we need to do it with Promise.all
     //   and not wait until last page is loaded
     // */
-    // if (!pageNumber) {
-    //   if (senderPage - pageNumber > 1) {
-    //     requests.push(
-    //       this.loadPaginatedTxs(
-    //         `/cosmos/tx/v1beta1/txs?message.sender=${address}`,
-    //         senderPage - pageNumber - 1
-    //       )
-    //     )
-    //   }
-    //   if (recipientPage - pageNumber > 1) {
-    //     requests.push(
-    //       this.loadPaginatedTxs(
-    //         `/cosmos/tx/v1beta1/txs?transfer.recipient=${address}`,
-    //         recipientPage - pageNumber - 1
-    //       )
-    //     )
-    //   }
-    // }
+    if (pageNumber === 1) {
+      if (senderPage - pageNumber > 0) {
+        requests.push(
+          this.loadPaginatedTxs(
+            `/cosmos/tx/v1beta1/txs?events=message.sender='${address}'`,
+            senderPage - pageNumber
+          )
+        )
+      }
+      if (recipientPage - pageNumber > 0) {
+        requests.push(
+          this.loadPaginatedTxs(
+            `/cosmos/tx/v1beta1/txs?events=message.action='send'&events=transfer.recipient='${address}'`,
+            recipientPage - pageNumber
+          )
+        )
+      }
+    }
 
-    // const txs = await Promise.all(requests).then(([...results]) =>
-    //   [].concat(...results)
-    // )
-    const txs = await this.axios.get(`https://api.cosmostation.io/v1/account/txs/${address}`)
+    const txs = await Promise.all(requests).then(([...results]) =>
+      [].concat(...results)
+    )
 
     return this.reducers.transactionsReducer(txs)
   }
@@ -187,7 +186,7 @@ export default class CosmosAPI {
     }
 
     return this.reducers.delegationReducer(
-      selfDelegation,
+      selfDelegation.delegation_response,
       validator,
       delegationEnum.ACTIVE
     ).amount
@@ -508,7 +507,6 @@ export default class CosmosAPI {
       `cosmos/staking/v1beta1/delegations/${address}`
     ).catch(console.log) || []
 
-    console.log(delegations)
     return delegations.length ? delegations
       .map((delegation) =>
         this.reducers.delegationReducer(
@@ -557,8 +555,7 @@ export default class CosmosAPI {
     ).catch(() => {
       return []
     })
-
-    return delegations.map((delegation) =>
+    return delegations.result.map((delegation) =>
       this.reducers.delegationReducer(
         delegation,
         validator,
@@ -591,14 +588,16 @@ export default class CosmosAPI {
     if (page < 1) {
       return []
     }
-    const pagination = `&limit=${PAGE_RECORDS_COUNT}&page=${page}`
-    const { txs } = await this.get(`${url}${pagination}`)
-    return txs || []
+
+    let offset = (page - 1) * PAGE_RECORDS_COUNT
+    const pagination = `&pagination.limit=${PAGE_RECORDS_COUNT}&pagination.offset=${offset}`
+    const { tx_responses } = await this.get(`${url}${pagination}`)
+    return tx_responses || []
   }
 
   async getPageCount(url) {
-    const page = await this.get(url + `&limit=${PAGE_RECORDS_COUNT}`)
-    return page.page_total
+    const response = await this.get(url + `&pagination.limit=${PAGE_RECORDS_COUNT}`)
+    return Math.ceil(response.pagination.total / PAGE_RECORDS_COUNT)
   }
 }
 

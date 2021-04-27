@@ -20,18 +20,18 @@
           type="text"
           placeholder="Must have at least 3 characters"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldName.$error && !$v.fieldName.required"
           name="Name"
           type="required"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldName.$error && !$v.fieldName.minLength"
           name="Name"
           type="minLength"
           min="3"
         />
-        <FormMessage
+        <CommonFormMessage
           v-if="$v.fieldName.$error && !$v.fieldName.nameExists"
           name="Name"
           type="custom"

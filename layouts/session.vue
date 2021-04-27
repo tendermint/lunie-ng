@@ -2,9 +2,6 @@
   <div class="session-layout lunie-light">
     <div class="session">
       <div v-if="$route.path !== '/welcome'" class="session-header">
-        <a @click="goBack">
-          <i class="material-icons notranslate circle back">arrow_back</i>
-        </a>
         <div class="session-close">
           <a @click="closeModal()">
             <i class="material-icons notranslate circle back">close</i>
@@ -34,10 +31,7 @@ export default {
   },
   methods: {
     closeModal() {
-      this.$router.push(`/validators`)
-    },
-    goBack() {
-      this.$router.go(`-1`)
+      this.$router.push(`/welcome`)
     },
   },
 }
@@ -67,12 +61,8 @@ export default {
   width: 100%;
 }
 
-.session-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  padding-bottom: 2rem;
+.session .session-close {
+  text-align: right;
 }
 
 .session-title {
@@ -89,7 +79,7 @@ export default {
 }
 
 .session-main {
-  padding: 1rem;
+  padding: 1rem 0;
 }
 
 .session-footer {
@@ -110,7 +100,8 @@ export default {
 
 .session-back {
   cursor: pointer;
-  display: flex;
+  position: absolute;
+  top: 40px;
   align-items: center;
 }
 

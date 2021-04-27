@@ -8,6 +8,20 @@
 <script>
 export default {
   name: `Warning`,
+  props: {
+    type: {
+      type: String,
+      default: undefined,
+    },
+    title: {
+      type: String,
+      default: undefined,
+    },
+    message: {
+      type: String,
+      default: undefined,
+    },
+  },
 }
 </script>
 

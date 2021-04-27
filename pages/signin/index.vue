@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Form :submit="onSubmit" class="session-container">
+    <CommonForm :submit="onSubmit" class="session-container">
       <h2 class="session-title">Sign in with account</h2>
       <div class="session-main bottom-indent">
         <CommonFormGroup field-id="sign-in-name" field-label="Select Account">
@@ -12,7 +12,7 @@
             type="select"
             placeholder="Select account…"
           />
-          <FormMessage
+          <CommonFormMessage
             v-if="$v.signInAddress.$error && !$v.signInAddress.required"
             name="Name"
             type="required"
@@ -29,24 +29,24 @@
             v-model="signInPassword"
             type="password"
           />
-          <FormMessage
+          <CommonFormMessage
             v-if="$v.signInPassword.$error && !$v.signInPassword.required"
             name="Password"
             type="required"
           />
-          <FormMessage
+          <CommonFormMessage
             v-if="$v.signInPassword.$error && !$v.signInPassword.minLength"
             name="Password"
             type="minLength"
             min="10"
           />
-          <FormMessage v-if="error" type="custom" :msg="error" />
+          <CommonFormMessage v-if="error" type="custom" :msg="error" />
         </CommonFormGroup>
       </div>
       <div class="session-footer">
-        <CommonButton value="Sign In" :disabled="loading" />
+        <CommonButton value="Sign In" :disabled="loading" :loading="loading" />
       </div>
-    </Form>
+    </CommonForm>
   </div>
 </template>
 
