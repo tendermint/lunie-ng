@@ -273,6 +273,8 @@ export function getMessageType(type) {
       return lunieMessageTypes.VOTE
     case 'cosmos.gov.v1beta1.MsgDeposit':
       return lunieMessageTypes.DEPOSIT
+    case 'cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission':
+      return lunieMessageTypes.CLAIM_REWARDS
     default:
       return lunieMessageTypes.UNKNOWN
   }
@@ -369,8 +371,8 @@ export function claimRewardsAmountReducer(transaction) {
 export function submitProposalDetailsReducer(message) {
   return {
     proposalType: message.content.type,
-    proposalTitle: message.content.value.title,
-    proposalDescription: message.content.value.description,
+    proposalTitle: message.content.title,
+    proposalDescription: message.content.description,
     initialDeposit: coinReducer(message.initial_deposit[0]),
   }
 }
