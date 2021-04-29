@@ -107,11 +107,12 @@ export default {
           return `Deposit`
         case lunieMessageTypes.VOTE:
           return `Vote`
+        case lunieMessageTypes.SUBMIT_PROPOSAL:
+          return `Proposal`
         case lunieMessageTypes.CLAIM_REWARDS:
           return `Claim Rewards`
         case lunieMessageTypes.UNKNOWN:
-          return this.transaction.rawMessage.type.split('/Msg')[1]
-        /* istanbul ignore next */
+          return this.transaction.rawMessage.message['@type'].split('/')[1]
         default:
           return ``
       }
