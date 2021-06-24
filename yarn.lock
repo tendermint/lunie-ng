@@ -768,6 +768,15 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
+"@cosmjs/amino@^0.25.5":
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/@cosmjs/amino/-/amino-0.25.5.tgz#a22abac74057848834f1e3b0d2b90a0a328dd119"
+  dependencies:
+    "@cosmjs/crypto" "^0.25.5"
+    "@cosmjs/encoding" "^0.25.5"
+    "@cosmjs/math" "^0.25.5"
+    "@cosmjs/utils" "^0.25.5"
+
 "@cosmjs/crypto@^0.23.1":
   version "0.23.1"
   resolved "https://registry.npmjs.org/@cosmjs/crypto/-/crypto-0.23.1.tgz"
@@ -786,9 +795,32 @@
     type-tagger "^1.0.0"
     unorm "^1.5.0"
 
+"@cosmjs/crypto@^0.25.5":
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/@cosmjs/crypto/-/crypto-0.25.5.tgz#4b8e4a8693f9f597b4de92df1b1057f61ec7a735"
+  dependencies:
+    "@cosmjs/encoding" "^0.25.5"
+    "@cosmjs/math" "^0.25.5"
+    "@cosmjs/utils" "^0.25.5"
+    bip39 "^3.0.2"
+    bn.js "^4.11.8"
+    elliptic "^6.5.3"
+    js-sha3 "^0.8.0"
+    libsodium-wrappers "^0.7.6"
+    ripemd160 "^2.0.2"
+    sha.js "^2.4.11"
+
 "@cosmjs/encoding@^0.23.1":
   version "0.23.1"
   resolved "https://registry.npmjs.org/@cosmjs/encoding/-/encoding-0.23.1.tgz"
+  dependencies:
+    base64-js "^1.3.0"
+    bech32 "^1.1.4"
+    readonly-date "^1.0.0"
+
+"@cosmjs/encoding@^0.25.5":
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/@cosmjs/encoding/-/encoding-0.25.5.tgz#edc90084b112b57ca73ec82c1682ac9c4da3bb3a"
   dependencies:
     base64-js "^1.3.0"
     bech32 "^1.1.4"
@@ -813,15 +845,37 @@
     "@cosmjs/utils" "^0.23.1"
     axios "^0.19.0"
 
+"@cosmjs/launchpad@^0.25.5":
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/@cosmjs/launchpad/-/launchpad-0.25.5.tgz#bfd7b5ce89145f26c35ebbce98e3f6ec0e06c520"
+  dependencies:
+    "@cosmjs/amino" "^0.25.5"
+    "@cosmjs/crypto" "^0.25.5"
+    "@cosmjs/encoding" "^0.25.5"
+    "@cosmjs/math" "^0.25.5"
+    "@cosmjs/utils" "^0.25.5"
+    axios "^0.21.1"
+    fast-deep-equal "^3.1.3"
+
 "@cosmjs/math@^0.23.1":
   version "0.23.1"
   resolved "https://registry.npmjs.org/@cosmjs/math/-/math-0.23.1.tgz"
   dependencies:
     bn.js "^4.11.8"
 
+"@cosmjs/math@^0.25.5":
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/@cosmjs/math/-/math-0.25.5.tgz#0f586610353c95b2055d1b2556a232622cd2d453"
+  dependencies:
+    bn.js "^4.11.8"
+
 "@cosmjs/utils@^0.23.1":
   version "0.23.1"
   resolved "https://registry.npmjs.org/@cosmjs/utils/-/utils-0.23.1.tgz"
+
+"@cosmjs/utils@^0.25.5":
+  version "0.25.5"
+  resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.25.5.tgz#6dc9d8de81acb9d49b6d1420f61ea2390f5d5f07"
 
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
@@ -1885,6 +1939,12 @@ axios@^0.19.0:
 axios@^0.20.0:
   version "0.20.0"
   resolved "https://registry.npmjs.org/axios/-/axios-0.20.0.tgz"
+  dependencies:
+    follow-redirects "^1.10.0"
+
+axios@^0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
   dependencies:
     follow-redirects "^1.10.0"
 
@@ -3676,7 +3736,7 @@ extract-css-chunks-webpack-plugin@^4.9.0:
     schema-utils "^1.0.0"
     webpack-sources "^1.1.0"
 
-fast-deep-equal@^3.1.1:
+fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
 
