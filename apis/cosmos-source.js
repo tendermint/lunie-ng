@@ -209,16 +209,17 @@ export default class CosmosAPI {
     const [
       validators,
       annualProvision,
-      supply,
       pool
     ] = await Promise.all([
       this.query(`staking/validators?status=BOND_STATUS_BONDED`),
       this.getAnnualProvision().catch(() => undefined),
-      this.getStakingSupply(),
       this.query(`cosmos/staking/v1beta1/pool`)
     ])
-    return validators.result.map(validator => reducers.validatorReducer(validator, annualProvision, supply, pool))
-
+    const totalShares = validators.result.reduce(
+      (sum, { delegator_shares: delegatorShares }) => sum.plus(delegatorShares),
+      BigNumber(0)
+    )
+    return validators.result.map(validator => reducers.validatorReducer(validator, annualProvision, totalShares, pool))
   }
 
   async getInflation() {
