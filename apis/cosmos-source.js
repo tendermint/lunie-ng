@@ -201,10 +201,6 @@ export default class CosmosAPI {
     await this.dataReady
     return Object.values(this.validators)
   }
-  async getStakingSupply() {
-    const res = await this.query(`cosmos/bank/v1beta1/supply`)
-    return BigNumber(res.supply[0].amount)
-  }
   async loadValidators() {
     const [
       validators,
