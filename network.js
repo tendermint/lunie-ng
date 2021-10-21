@@ -34,6 +34,6 @@ export default {
       ],
     },
   },
-  icon: `https://lunie.fra1.digitaloceanspaces.com/network-icons/cosmos.png`,
+  icon: `https://v1.cosmos.network/img/brandmark.c15d55f6.png`,
   localSigning: true, // this is only to be used as a developer tool - never deployed in production or for mainnet chains
 }
